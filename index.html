@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bug Life</title>
+
+  <link rel="stylesheet" href="style.css">
+  <!-- TODO: replace with cdn version before deploy -->
+  <script src="modules/jquery-1.11.1.min.js"></script>
+  <script src="modules/parser.js"></script>
+  <script src="modules/visuals.js"></script>
+  <script>
+    $(function(){
+      var parser = new Parser()
+        , visuals = new Visuals('graph')
+        , $repository = $('#repository')
+
+      parser.beforeParse = function(){
+        visuals.showLoading()
+      }
+
+      parser.afterParse = function(data){
+        visuals.showData(data)
+      }
+
+      parser.onError = function(){
+        visuals.showError()
+      }
+
+      // On form submit
+      $('#repository-form').submit(function(ev){
+        ev.preventDefault()
+
+        if ($repository.val()) {
+          parser.parse($repository.val())
+        }
+      })
+
+      // If initially form has a value
+      if ($repository.val()) {
+        parser.parse($repository.val())
+      }
+    })
+  </script>
+</head>
+<body>
+  <form action="" id="repository-form">
+    <input type="text" name="repository" id="repository" placeholder="Insert repository url" value="TUM-FAF/FAFSite">
+    <button type="submit">Submit</button>
+  </form>
+  <div id="graph" class="graph">I'm graph</div>
+</body>
+</html>
