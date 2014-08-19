@@ -29,13 +29,24 @@ Parser.prototype.onError = function (message) {}
 
 /**
  * Parser starting point
- * @param  {String} repository_uri
+ * @param  {String} repository_uri - username:reponame
  */
 Parser.prototype.parse = function(repository_uri) {
   var that = this
 
   this.beforeParse()
   var github = this.auth()
+  var repository_uri_splitted = repository_uri.split("/")
+  var username = repository_uri_splitted[0]
+  var reponame = repository_uri_splitted[1]
+
+  var repo = github.getRepo(username, reponame);
+  var final_repo_info = {}
+  repo.show(function(err, repo) {
+    final_repo_info.name = repo.name
+    final_repo_info.created_at = formatDate(new Date(repo.created_at))
+    final_repo_info.url = repo.url
+  })
 
   // Send afterParse after 500 ms
   setTimeout(function(){
@@ -148,6 +159,20 @@ Parser.prototype.auth = function() {
   })
   return github
 }
+
+/**
+ * Return a string representation of the date in format year-date-month
+ * @param  {Date} date_obj
+ * @return {String}
+ */
+function formatDate(date_obj) {
+  var date = date_obj.getDate()
+  var month = date_obj.getMonth()
+  var year = date_obj.getFullYear()
+  return year + "-" + date + "-" + month
+}
+
+/**
  * Helper function to debug prints
  * @param  {Object} value
  */
