@@ -49,7 +49,7 @@ Parser.prototype.parse = function(repository_uri) {
   })
 
   var issues = github.getIssues(username, reponame)
-  issues.list({}, function(err, issues) {
+  issues.list_all({"state": "all", "per_page": "100"}, function(err, issues) {
     final_repo_info.labels = that.get_labels(issues)
   })
 

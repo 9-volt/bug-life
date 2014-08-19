@@ -93,6 +93,17 @@
       })();
     }
 
+    function _appendParams(path, params) {  
+      if (!_.isEmpty(params)) {
+        var new_path = path + "?";
+        for (var key in params) {
+          new_path += key + "=" + params[key] + "&";
+        }
+        return new_path.slice(0, -1);
+      }
+      return path;
+    }
+
 
 
     // User API
@@ -742,7 +753,14 @@
 
       this.list = function(options, cb) {
         _request("GET", path, options, function(err, res) {
-          cb(err,res)
+          cb(err,res);
+        });
+      };
+
+      this.list_all = function(params, cb) {
+        var new_path = _appendParams(path, params)
+        _requestAllPages("GET", new_path, null, function(err, res) {
+          cb(err, res);
         });
       };
     };
