@@ -48,6 +48,11 @@ Parser.prototype.parse = function(repository_uri) {
     final_repo_info.url = repo.url
   })
 
+  var issues = github.getIssues(username, reponame)
+  issues.list({}, function(err, issues) {
+    final_repo_info.labels = that.get_labels(issues)
+  })
+
   // Send afterParse after 500 ms
   setTimeout(function(){
     // Once in a while fake an error
@@ -158,6 +163,37 @@ Parser.prototype.auth = function() {
     , auth: "oauth"
   })
   return github
+}
+
+/**
+ * Get all issues' labels from a repo
+ * @param  {Object} issues
+ * @return {Array}
+ */
+Parser.prototype.get_labels = function(issues) {
+  var labels = []
+  for (var i = 0; i < issues.length; i++) {
+    var issue_labels = issues[i].labels
+    for (var j = 0; j < issue_labels.length; j++) {
+      if (!inArrayByName(labels, issue_labels[j].name))
+        labels.push(issue_labels[j])
+    }
+  }
+  return labels
+}
+
+/**
+ * Check if a value is in an array of objects with property "name"
+ * @param  {Array} list
+ * @param  {String} name
+ * @return {Boolean}
+ */
+function inArrayByName(list, value) {
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].name === value)
+      return true
+  }
+  return false
 }
 
 /**
