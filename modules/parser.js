@@ -35,6 +35,7 @@ Parser.prototype.parse = function(repository_uri) {
   var that = this
 
   this.beforeParse()
+  var github = this.auth()
 
   // Send afterParse after 500 ms
   setTimeout(function(){
@@ -134,6 +135,19 @@ Parser.prototype.parse = function(repository_uri) {
 }
 
 /**
+ * Github authentication
+ * @return {Object}
+ */
+Parser.prototype.auth = function() {
+  var github = new Github({
+    // insert here github token
+    // can't be set as env vars, because it's client-side javascript
+    // therefore hardcode all the tokens!
+    token: ""
+    , auth: "oauth"
+  })
+  return github
+}
  * Helper function to debug prints
  * @param  {Object} value
  */
