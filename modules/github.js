@@ -747,6 +747,19 @@
       };
     };
 
+    // Issues events API
+    // =================
+
+    Github.IssueEvents = function(options) {
+      var path = "/repos/" + options.user + "/" + options.repo + "/issues/events";
+
+      this.list = function(cb) {
+        _request("GET", path, null, function(err, res) {
+          cb(err, res);
+        });
+      };
+    };
+
     // Top Level API
     // -------
 
@@ -764,6 +777,10 @@
 
     this.getGist = function(id) {
       return new Github.Gist({id: id});
+    };
+
+    this.getIssuesEvents = function(user, repo) {
+      return new Github.IssueEvents({user: user, repo: repo});
     };
   };
 
