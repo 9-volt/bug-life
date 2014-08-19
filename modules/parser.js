@@ -53,6 +53,12 @@ Parser.prototype.parse = function(repository_uri) {
     final_repo_info.labels = that.get_labels(issues)
   })
 
+  var issues_events = github.getIssuesEvents(username, reponame)
+  issues_events.list(function(err, issues_events) {
+    var issues = that.get_issues_from_events(issues_events)
+    final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
+  })
+
   // Send afterParse after 500 ms
   setTimeout(function(){
     // Once in a while fake an error
@@ -167,11 +173,12 @@ Parser.prototype.auth = function() {
 
 /**
  * Get all issues' labels from a repo
- * @param  {Object} issues
+ * @param  {Array} issues
+ * @param  {Array} labels
  * @return {Array}
  */
-Parser.prototype.get_labels = function(issues) {
-  var labels = []
+Parser.prototype.get_labels = function(issues, labels) {
+  labels = typeof labels !== 'undefined' ? labels : [];
   for (var i = 0; i < issues.length; i++) {
     var issue_labels = issues[i].labels
     for (var j = 0; j < issue_labels.length; j++) {
@@ -180,6 +187,19 @@ Parser.prototype.get_labels = function(issues) {
     }
   }
   return labels
+}
+
+/**
+ * Extract issues from events
+ * @param  {Array} events
+ * @return {Array}
+ */
+Parser.prototype.get_issues_from_events = function(events) {
+  var issues = []
+  for (var i = 0; i < events.length; i++) {
+    issues.push(events[i].issue)
+  }
+  return issues
 }
 
 /**
