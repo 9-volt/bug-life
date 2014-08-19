@@ -66,10 +66,10 @@
       if (sync) return xhr.response;
     }
 
-    function _requestAllPages(path, cb) {
+    function _requestAllPages(method, path, data, cb) {
       var results = [];
       (function iterate() {
-        _request("GET", path, null, function(err, res, xhr) {
+        _request(method, path, data, function(err, res, xhr) {
           if (err) {
             return cb(err);
           }
@@ -101,7 +101,7 @@
     Github.User = function() {
       this.repos = function(cb) {
         // Github does not always honor the 1000 limit so we want to iterate over the data set.
-        _requestAllPages("/user/repos?type=all&per_page=1000&sort=updated", function(err, res) {
+        _requestAllPages("GET", "/user/repos?type=all&per_page=1000&sort=updated", null, function(err, res) {
           cb(err, res);
         });
       };
@@ -149,7 +149,7 @@
 
       this.userRepos = function(username, cb) {
         // Github does not always honor the 1000 limit so we want to iterate over the data set.
-        _requestAllPages("/users/"+username+"/repos?type=all&per_page=1000&sort=updated", function(err, res) {
+        _requestAllPages("GET", "/users/"+username+"/repos?type=all&per_page=1000&sort=updated", null, function(err, res) {
           cb(err, res);
         });
       };
@@ -168,7 +168,7 @@
 
       this.orgRepos = function(orgname, cb) {
         // Github does not always honor the 1000 limit so we want to iterate over the data set.
-        _requestAllPages("/orgs/"+orgname+"/repos?type=all&&page_num=1000&sort=updated&direction=desc", function(err, res) {
+        _requestAllPages("GET", "/orgs/"+orgname+"/repos?type=all&&page_num=1000&sort=updated&direction=desc", null, function(err, res) {
           cb(err, res);
         });
       };
