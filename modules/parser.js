@@ -51,6 +51,7 @@ Parser.prototype.parse = function(repository_uri) {
   var issues = github.getIssues(username, reponame)
   issues.list_all({"state": "all", "per_page": "100"}, function(err, issues) {
     final_repo_info.labels = that.get_labels(issues)
+    var all_issues = that.filter_pull_requests(issues)
   })
 
   var issues_events = github.getIssuesEvents(username, reponame)
@@ -200,6 +201,21 @@ Parser.prototype.get_issues_from_events = function(events) {
     issues.push(events[i].issue)
   }
   return issues
+}
+
+/**
+ * Filter pull request from issues
+ * @param  {Array} issues
+ * @return {Array}
+ */
+Parser.prototype.filter_pull_requests = function(issues) {
+  var filtered_issues = []
+  for (var i = 0; i < issues.length; i++) {
+    if (!issues[i].hasOwnProperty('pull_request')) {
+      filtered_issues.push(issues[i])
+    }
+  }
+  return filtered_issues
 }
 
 /**
