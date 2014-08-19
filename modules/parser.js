@@ -183,8 +183,9 @@ Parser.prototype.get_labels = function(issues, labels) {
   for (var i = 0; i < issues.length; i++) {
     var issue_labels = issues[i].labels
     for (var j = 0; j < issue_labels.length; j++) {
-      if (!inArrayByName(labels, issue_labels[j].name))
+      if (!inArrayByName(labels, issue_labels[j].name)) {
         labels.push(issue_labels[j])
+      }
     }
   }
   return labels
