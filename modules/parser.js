@@ -132,3 +132,11 @@ Parser.prototype.parse = function(repository_uri) {
     }
   }, 500)
 }
+
+/**
+ * Helper function to debug prints
+ * @param  {Object} value
+ */
+function c(value) {
+  console.log(value)
+}
