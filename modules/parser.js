@@ -89,7 +89,7 @@ Parser.prototype.auth = function() {
     // insert here github token
     // can't be set as env vars, because it's client-side javascript
     // therefore hardcode all the tokens!
-    token: ""
+      token: ""
     , auth: "oauth"
   })
   return github
@@ -137,11 +137,11 @@ Parser.prototype.prepare_issues = function(issues) {
   var issues_obj = {}
   for (var i = 0; i < issues.length; i++) {
     issues_obj[issues[i].number] = {
-      "url": issues[i].url
+        "url": issues[i].url
       , "title": issues[i].title
-      , "state": issues[i].state 
+      , "state": issues[i].state
       , "open": [{
-        "from": formatDate(new Date(issues[i].created_at))
+          "from": formatDate(new Date(issues[i].created_at))
         , "to": issues[i].closed_at === null ? null : formatDate(new Date(issues[i].closed_at))
       }]
       , "labels": issues[i].labels
