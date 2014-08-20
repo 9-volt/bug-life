@@ -62,6 +62,7 @@ Parser.prototype.parse = function(repository_uri) {
       final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
       var hash_issues = that.prepare_issues(all_issues)
       that.add_issue_events(hash_issues, events)
+      final_repo_info.issues = that.tranform_issues(hash_issues)
     })
   })
 
@@ -217,7 +218,6 @@ Parser.prototype.get_issues_from_events = function(events) {
  */
 Parser.prototype.prepare_issues = function(issues) {
   var issues_obj = {}
-  c(issues)
   for (var i = 0; i < issues.length; i++) {
     issues_obj[issues[i].number] = {
       "url": issues[i].url
@@ -227,27 +227,29 @@ Parser.prototype.prepare_issues = function(issues) {
         "from": formatDate(new Date(issues[i].created_at))
         , "to": issues[i].closed_at === null ? null : formatDate(new Date(issues[i].closed_at))
       }]
+      , "labels": issues[i].labels
     }
   }
   return issues_obj
 }
 
+/**
+ * Add events info about issues
+ * @param {Object} issues
+ * @param {Array} events
+ */
 Parser.prototype.add_issue_events = function(issues, events) {
-  c(events)
   for (var i = 0; i < events.length; i++) {
     var number = events[i].issue.number
     if (events[i].event === "closed") {
       this.add_closed_event(issues[number], events[i])
     } else if (events[i].event === "reopened") {
       this.add_reopened_event(issues[number], events[i])
-    } else if (events[i].event === "labeled") {
-      // process as labeled
-    } else if (events[i].events === "unlabeled") {
-      // process as unlabeled
     } else {
       continue
     }
   }
+  return issues
 }
 
 /**
@@ -268,6 +270,21 @@ Parser.prototype.add_closed_event = function(issue, event) {
 Parser.prototype.add_reopened_event = function(issue, event) {
   var event_created_at = formatDate(new Date(event.created_at))
   issue.open.push({"from": event_created_at, "to": null})
+}
+
+/**
+ * Transform issues data from a hash table to an array to objects
+ * @param  {Object} hash_issues
+ * @return {Array}
+ */
+Parser.prototype.tranform_issues = function(hash_issues) {
+  var issues = []
+  for (number in hash_issues) {
+    var issue = hash_issues[number]
+    issue.number = parseInt(number)
+    issues.push(issue)
+  }
+  return issues
 }
 
 /**
