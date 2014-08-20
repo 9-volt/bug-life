@@ -55,11 +55,12 @@ Parser.prototype.parse = function(repository_uri) {
     var all_issues = issues.filter(is_not_pull_request)
 
     issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
+      issues_events.reverse()
       var issues = that.get_issues_from_events(issues_events)
       var events = issues_events.filter(is_of_type)
       events = events.filter(is_not_pull_request_event)
       final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
-      final_repo_info.issues = that.filter_issues(all_issues, events)
+      var hash_issues = that.prepare_issues(all_issues)
     })
   })
 
@@ -207,6 +208,28 @@ Parser.prototype.get_issues_from_events = function(events) {
   return issues
 }
 
+/**
+ * Transform issues into an Array of hashes tables with minimum necessary info
+ * about the issues
+ * @param  {Array} issues
+ * @return {Object}
+ */
+Parser.prototype.prepare_issues = function(issues) {
+  var issues_obj = {}
+  c(issues)
+  for (var i = 0; i < issues.length; i++) {
+    issues_obj[issues[i].number] = {
+      "url": issues[i].url
+      , "title": issues[i].title
+      , "state": issues[i].state 
+      , "open": [{
+        "from": formatDate(new Date(issues[i].created_at))
+        , "to": issues[i].closed_at === null ? null : formatDate(new Date(issues[i].closed_at))
+      }]
+    }
+  }
+  return issues_obj
+}
 /**
  * Check if a value is in an array of objects with property "name"
  * @param  {Array} list
