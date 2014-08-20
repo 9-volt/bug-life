@@ -43,6 +43,9 @@ Parser.prototype.parse = function(repository_uri) {
   var repo = github.getRepo(username, reponame);
   var final_repo_info = {}
   repo.show(function(err, repo) {
+    if (err !== null) {
+      return that.onError("unknown-error")
+    }
     final_repo_info.name = repo.name
     final_repo_info.created_at = formatDate(new Date(repo.created_at))
     final_repo_info.url = repo.url
@@ -51,10 +54,19 @@ Parser.prototype.parse = function(repository_uri) {
   var issues = github.getIssues(username, reponame)
   var issues_events = github.getIssuesEvents(username, reponame)
   issues.list_all({"state": "all", "per_page": "100"}, function(err, issues) {
+    if (err !== null) {
+      return that.onError("unknown-error")
+    }
     final_repo_info.labels = that.get_labels(issues)
     var all_issues = issues.filter(is_not_pull_request)
+    if (all_issues.length === 0) {
+      return that.onError("no-issues")
+    }
 
     issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
+      if (err !== null) {
+        return that.onError("unknown-error")
+      }
       issues_events.reverse()
       var issues = that.get_issues_from_events(issues_events)
       var events = issues_events.filter(is_of_type)
@@ -63,104 +75,9 @@ Parser.prototype.parse = function(repository_uri) {
       var hash_issues = that.prepare_issues(all_issues)
       that.add_issue_events(hash_issues, events)
       final_repo_info.issues = that.tranform_issues(hash_issues)
+      that.afterParse(final_repo_info)
     })
   })
-
-  // Send afterParse after 500 ms
-  setTimeout(function(){
-    // Once in a while fake an error
-    if (Math.random() > 0.9) {
-      that.onError()
-    } else {
-      that.afterParse({
-        name: 'Repository Title',
-        created_at: '2011-01-26',
-        url: 'https://github.com/TUM-FAF/FAFSite',
-        labels: [
-          {
-            url: 'https://github.com/TUM-FAF/FAFSite/labels/suggestion',
-            name: 'Suggestion',
-            color: '#FFDC00'
-          },
-          {
-            url: 'https://github.com/TUM-FAF/FAFSite/labels/front-end',
-            name: 'Front-end',
-            color: '#02e10c'
-          }
-        ],
-        issues: [
-          {
-            number: 40,
-            url: 'https://github.com/TUM-FAF/FAFSite/issues/40',
-            title: 'Create a site monitor',
-            state: 'open',
-            open: [
-              {
-                from: '2011-01-27',
-                to: '2011-01-29'
-              },
-              {
-                from: '2011-02-04',
-                to: '2011-03-24'
-              },
-              {
-                from: '2012-03-12',
-                to: null
-              }
-            ],
-            labels: [
-              {
-                url: 'https://github.com/TUM-FAF/FAFSite/labels/suggestion',
-                name: 'Suggestion',
-                color: '#FFDC00',
-                assigned: [
-                  {
-                    from: '2011-01-27',
-                    to: null
-                  }
-                ]
-              },{
-                url: 'https://github.com/TUM-FAF/FAFSite/labels/front-end',
-                name: 'Front-end',
-                color: '#02e10c',
-                assigned: [
-                  {
-                    from: '2011-02-04',
-                    to: '2012-03-12'
-                  },{
-                    from: '2014-02-02',
-                    to: null
-                  }
-                ]
-              }
-            ]
-          },{
-            number: 39,
-            url: 'https://github.com/TUM-FAF/FAFSite/issues/39',
-            title: 'Deploy site to new host',
-            state: 'open',
-            open: [
-              {
-                from: '2012-02-12',
-                to: null
-              }
-            ]
-          },{
-            number: 28,
-            url: 'https://github.com/TUM-FAF/FAFSite/issues/28',
-            title: 'jQuery update',
-            state: 'closed',
-            open: [
-              {
-                from: '2013-07-20',
-                to: '2014-02-04'
-              }
-            ]
-          }
-        ]
-      })
-    }
-  }, 500)
 }
 
 /**
