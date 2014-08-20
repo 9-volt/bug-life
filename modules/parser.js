@@ -57,6 +57,7 @@ Parser.prototype.parse = function(repository_uri) {
     issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
       var issues = that.get_issues_from_events(issues_events)
       var events = issues_events.filter(is_of_type)
+      events = events.filter(is_not_pull_request_event)
       final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
       final_repo_info.issues = that.filter_issues(all_issues, events)
     })
@@ -252,6 +253,15 @@ function is_of_type(element) {
  */
 function is_not_pull_request(element) {
   return !element.hasOwnProperty('pull_request')
+}
+
+/**
+ * Check is an event is not a pull request event
+ * @param  {Object}  element
+ * @return {Boolean}
+ */
+function is_not_pull_request_event(element) {
+  return !element.issue.hasOwnProperty('pull_request')
 }
 
 /**
