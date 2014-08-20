@@ -228,9 +228,9 @@ function inArrayByName(list, value) {
  */
 function formatDate(date_obj) {
   var date = date_obj.getDate()
-  var month = date_obj.getMonth()
+  var month = date_obj.getMonth() + 1
   var year = date_obj.getFullYear()
-  return year + "-" + date + "-" + month
+  return year + "-" + pad2(month) + "-" + pad2(date)
 }
 
 /**
@@ -262,6 +262,15 @@ function is_not_pull_request(element) {
  */
 function is_not_pull_request_event(element) {
   return !element.issue.hasOwnProperty('pull_request')
+}
+
+/**
+ * Pad a number to 2 digits
+ * @param  {Number} number
+ * @return {Number}
+ */
+function pad2(number) {
+  return (number < 10 ? '0' : '') + number
 }
 
 /**
