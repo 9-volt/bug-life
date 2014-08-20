@@ -61,6 +61,7 @@ Parser.prototype.parse = function(repository_uri) {
       events = events.filter(is_not_pull_request_event)
       final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
       var hash_issues = that.prepare_issues(all_issues)
+      that.add_issue_events(hash_issues, events)
     })
   })
 
@@ -230,6 +231,45 @@ Parser.prototype.prepare_issues = function(issues) {
   }
   return issues_obj
 }
+
+Parser.prototype.add_issue_events = function(issues, events) {
+  c(events)
+  for (var i = 0; i < events.length; i++) {
+    var number = events[i].issue.number
+    if (events[i].event === "closed") {
+      this.add_closed_event(issues[number], events[i])
+    } else if (events[i].event === "reopened") {
+      this.add_reopened_event(issues[number], events[i])
+    } else if (events[i].event === "labeled") {
+      // process as labeled
+    } else if (events[i].events === "unlabeled") {
+      // process as unlabeled
+    } else {
+      continue
+    }
+  }
+}
+
+/**
+ * Add closed issue event to issue object
+ * @param {Object} issue
+ * @param {Object} event
+ */
+Parser.prototype.add_closed_event = function(issue, event) {
+  var event_created_at = formatDate(new Date(event.created_at))
+  issue.open[issue.open.length - 1].to = event_created_at
+}
+
+/**
+ * Add reopened issue event to issue object
+ * @param {Object} issue
+ * @param {Object} event
+ */
+Parser.prototype.add_reopened_event = function(issue, event) {
+  var event_created_at = formatDate(new Date(event.created_at))
+  issue.open.push({"from": event_created_at, "to": null})
+}
+
 /**
  * Check if a value is in an array of objects with property "name"
  * @param  {Array} list
