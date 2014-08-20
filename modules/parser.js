@@ -49,15 +49,17 @@ Parser.prototype.parse = function(repository_uri) {
   })
 
   var issues = github.getIssues(username, reponame)
+  var issues_events = github.getIssuesEvents(username, reponame)
   issues.list_all({"state": "all", "per_page": "100"}, function(err, issues) {
     final_repo_info.labels = that.get_labels(issues)
-    var all_issues = that.filter_pull_requests(issues)
-  })
+    var all_issues = issues.filter(is_not_pull_request)
 
-  var issues_events = github.getIssuesEvents(username, reponame)
-  issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
-    var issues = that.get_issues_from_events(issues_events)
-    final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
+    issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
+      var issues = that.get_issues_from_events(issues_events)
+      var events = issues_events.filter(is_of_type)
+      final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
+      final_repo_info.issues = that.filter_issues(all_issues, events)
+    })
   })
 
   // Send afterParse after 500 ms
@@ -205,21 +207,6 @@ Parser.prototype.get_issues_from_events = function(events) {
 }
 
 /**
- * Filter pull request from issues
- * @param  {Array} issues
- * @return {Array}
- */
-Parser.prototype.filter_pull_requests = function(issues) {
-  var filtered_issues = []
-  for (var i = 0; i < issues.length; i++) {
-    if (!issues[i].hasOwnProperty('pull_request')) {
-      filtered_issues.push(issues[i])
-    }
-  }
-  return filtered_issues
-}
-
-/**
  * Check if a value is in an array of objects with property "name"
  * @param  {Array} list
  * @param  {String} name
@@ -243,6 +230,28 @@ function formatDate(date_obj) {
   var month = date_obj.getMonth()
   var year = date_obj.getFullYear()
   return year + "-" + date + "-" + month
+}
+
+/**
+ * Check if an element is of one of the types: closed, reopened, labeled, unlabeled
+ * @param  {Object}  element
+ * @return {Boolean}
+ */
+function is_of_type(element) {
+  var types = ["closed", "reopened", "labeled", "unlabeled"]
+  if (types.indexOf(element.event) > -1) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Check if an element is a issue and not a pull request
+ * @param  {Object}  element
+ * @return {Boolean}
+ */
+function is_not_pull_request(element) {
+  return !element.hasOwnProperty('pull_request')
 }
 
 /**
