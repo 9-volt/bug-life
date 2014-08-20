@@ -55,7 +55,7 @@ Parser.prototype.parse = function(repository_uri) {
   })
 
   var issues_events = github.getIssuesEvents(username, reponame)
-  issues_events.list(function(err, issues_events) {
+  issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
     var issues = that.get_issues_from_events(issues_events)
     final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
   })

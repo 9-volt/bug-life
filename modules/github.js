@@ -776,6 +776,13 @@
           cb(err, res);
         });
       };
+
+      this.list_all = function(params, cb) {
+        var new_path = _appendParams(path, params)
+        _requestAllPages("GET", new_path, null, function(err, res) {
+          cb(err, res);
+        });
+      };
     };
 
     // Top Level API
