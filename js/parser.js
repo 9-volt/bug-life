@@ -135,7 +135,7 @@ Parser.prototype.auth = function() {
     // insert here github token
     // can't be set as env vars, because it's client-side javascript
     // therefore hardcode all the tokens!
-      token: "4566941234b231002e5f6d26fa34ca95d81df0da"
+      token: ""
     , auth: "oauth"
     , _onProgress: function(issues_pages, events_pages, current_issue_page, current_event_page) {
       if (issues_pages != null) {
