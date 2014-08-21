@@ -5,11 +5,16 @@
   <title>Bug Life</title>
 
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="modules/nv.d3.min.css">
+
   <!-- TODO: replace with cdn version before deploy -->
   <script src="modules/jquery-1.11.1.min.js"></script>
   <script src="modules/base64.js"></script>
   <script src="modules/underscore-min.js"></script>
   <script src="modules/github.js"></script>
+  <script src="modules/d3.js"></script>
+  <script src="modules/nv.d3.js"></script>
+
   <script src="modules/parser.js"></script>
   <script src="modules/visuals.js"></script>
   <script>
@@ -51,6 +56,8 @@
     <input type="text" name="repository" id="repository" placeholder="Insert repository url" value="TUM-FAF/FAFSite">
     <button type="submit">Submit</button>
   </form>
-  <div id="graph" class="graph">I'm graph</div>
+  <div id="chart" class="chart" style="width: 100%">
+    <svg style="height: 500px"></svg>
+  </div>
 </body>
 </html>
