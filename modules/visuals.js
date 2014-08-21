@@ -35,8 +35,26 @@ function dateToTimestamp(str) {
 }
 
 Visuals.prototype.showData = function(data) {
-  // console.log('Visual Data is', data)
+  this.showStackedArea(data)
+}
 
+Visuals.prototype.showStackedArea = function(data) {
+  // Bootstrap stacked area object
+  var processedData = bootstrapStackedAreaObject(data)
+
+  // Add time-values to each issue
+  fillTimeValues(processedData, data)
+
+  // Object to Array
+  var processedDataArray = []
+  for (var p in processedData) {
+    processedDataArray.push(processedData[p])
+  }
+
+  drawStackedArea(processedDataArray)
+}
+
+function bootstrapStackedAreaObject(data) {
   var datesMilisecondsRange = {}
     , start = dateToTimestamp(data.created_at)
     , today = dateToTimestamp(null)
@@ -48,20 +66,38 @@ Visuals.prototype.showData = function(data) {
   }
 
   var processedData = {}
+    , label
+    , i
 
-  var label
-  for (var i in data.labels) {
+  // Add all labels
+  for (i in data.labels) {
     label = data.labels[i]
 
     processedData[label.name] = {key: label.name, values: [], time: Object.create(datesMilisecondsRange)}
   }
+
   // Add no label
   processedData['no label'] = {key: 'no label', values: [], time: Object.create(datesMilisecondsRange)}
 
-  var issue, l, label, o, open, d, from, to
-  for (var j in data.issues) {
-    issue = data.issues[j]
+  return processedData
+}
 
+function fillTimeValues(processedData, data) {
+  var i
+    , issue
+    , l
+    , label
+    , o
+    , open
+    , d
+    , from
+    , to
+
+  // Go throuch all issues
+  for (i in data.issues) {
+    issue = data.issues[i]
+
+    // If issue has no labels than assign 'no label' label
     if (issue.labels.length === 0) {
       issue.labels.push({
         color: '#ccc'
@@ -70,15 +106,18 @@ Visuals.prototype.showData = function(data) {
       })
     }
 
+    // For each label
     for (l in issue.labels) {
       label = issue.labels[l]
 
+      // For each open range
       for (o in issue.open) {
         open = issue.open[o]
 
         from = dateToTimestamp(open.from)
         to = dateToTimestamp(open.to)
 
+        // Fill label time-value object
         while(from < to) {
           processedData[label.name].time[from] += 1
           from += 86400 * 1000 // 3600 * 24 * 1000
@@ -87,28 +126,29 @@ Visuals.prototype.showData = function(data) {
     }
   }
 
-  var _data, t
-  for (var p in processedData) {
+  var p
+    , _data
+    , t
+
+  for (p in processedData) {
     _data = processedData[p]
 
+    // Add tuples of timeKey-value to values array
     for (t in _data.time) {
       _data.values.push([+t, _data.time[t]])
     }
 
+    // Sort values by timeKey
     _data.values.sort(function(a, b){
       return a[0] - b[0]
     })
+
+    // Get rid of time array
+    delete _data.time
   }
+}
 
-  // Object to Array
-  var processedDataArray = []
-  for (var p in processedData) {
-    delete processedData[p].time
-    processedDataArray.push(processedData[p])
-  }
-
-  // console.log(processedDataArray)
-
+function drawStackedArea(processedDataArray) {
   nv.addGraph(function() {
     var chart = nv.models.stackedAreaChart()
       .margin({right: 100})
