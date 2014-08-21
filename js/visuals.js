@@ -74,11 +74,11 @@ $(function(){
     for (i in data.labels) {
       label = data.labels[i]
 
-      processedData[label.name] = {key: label.name, values: [], time: Object.create(datesMilisecondsRange)}
+      processedData[label.name] = {key: label.name, values: [], time: Object.create(datesMilisecondsRange), color: '#' + label.color}
     }
 
     // Add no label
-    processedData['no label'] = {key: 'no label', values: [], time: Object.create(datesMilisecondsRange)}
+    processedData['no label'] = {key: 'no label', values: [], time: Object.create(datesMilisecondsRange), color: '#ccc'}
 
     return processedData
   }
@@ -158,8 +158,10 @@ $(function(){
         .useInteractiveGuideline(true)    // Tooltips which show all data points
         .rightAlignYAxis(true)            // Let's move the y-axis to the right side.
         .transitionDuration(500)
-        .showControls(false)               //Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
-        .clipEdge(true);
+        .showControls(false)              // Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
+        .clipEdge(true)
+        // .showLegend(false)
+        // .showXAxis(false)                 // Show X Axis (dates)
 
       //Format x-axis labels with custom function.
       chart.xAxis.tickFormat(function(d) {
