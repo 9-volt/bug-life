@@ -1,3 +1,6 @@
+// Constants
+PER_PAGE = 100
+
 // Construstor
 var Parser = function() {
   this.init()
@@ -28,12 +31,53 @@ Parser.prototype.afterParse = function (data) {}
 Parser.prototype.onError = function (message) {}
 
 /**
+ * When the progress of parsing changes
+ * @param  {Integer} progress
+ */
+Parser.prototype.onProgress = function(progress) {}
+
+/**
+ * Number of pages for issues
+ * @type {Integer}
+ */
+Parser.prototype.issuesPages = null
+
+/**
+ * Number of pages for events
+ * @type {Integer}
+ */
+Parser.prototype.eventsPages = null
+
+/**
+ * Number of current page for extracting issues
+ * @type {Integer}
+ */
+Parser.prototype.currentIssuesPage = null
+
+/**
+ * Number of current page for extracting events
+ * @type {Integer}
+ */
+Parser.prototype.currentEventsPage = null
+
+/**
+ * Set to null all attributes
+ */
+Parser.prototype.resetAttributes = function() {
+  this.issuesPages = null
+  this.eventsPages = null
+  this.currentIssuesPage = null
+  this.currentEventsPage = null
+}
+
+/**
  * Parser starting point
  * @param  {String} repository_uri - username:reponame
  */
 Parser.prototype.parse = function(repository_uri) {
   var that = this
 
+  this.resetAttributes()
   this.beforeParse()
   var github = this.auth()
   var repository_uri_splitted = repository_uri.split("/")
@@ -53,7 +97,7 @@ Parser.prototype.parse = function(repository_uri) {
 
   var issues = github.getIssues(username, reponame)
   var issues_events = github.getIssuesEvents(username, reponame)
-  issues.list_all({"state": "all", "per_page": "100"}, function(err, issues) {
+  issues.list_all({"state": "all", "per_page": PER_PAGE}, function(err, issues) {
     if (err !== null) {
       return that.onError("unknown-error")
     }
@@ -63,7 +107,7 @@ Parser.prototype.parse = function(repository_uri) {
       return that.onError("no-issues")
     }
 
-    issues_events.list_all({"per_page": "100"}, function(err, issues_events) {
+    issues_events.list_all({"per_page": PER_PAGE}, function(err, issues_events) {
       if (err !== null) {
         return that.onError("unknown-error")
       }
@@ -75,6 +119,7 @@ Parser.prototype.parse = function(repository_uri) {
       var hash_issues = that.prepare_issues(all_issues)
       that.add_issue_events(hash_issues, events)
       final_repo_info.issues = that.tranform_issues(hash_issues)
+      that.onProgress(100)
       that.afterParse(final_repo_info)
     })
   })
@@ -85,14 +130,54 @@ Parser.prototype.parse = function(repository_uri) {
  * @return {Object}
  */
 Parser.prototype.auth = function() {
+  var that = this
   var github = new Github({
     // insert here github token
     // can't be set as env vars, because it's client-side javascript
     // therefore hardcode all the tokens!
       token: ""
     , auth: "oauth"
+    , _onProgress: function(issues_pages, events_pages, current_issue_page, current_event_page) {
+      if (issues_pages != null) {
+        that.issuesPages = issues_pages
+      }
+      if (events_pages != null) {
+        that.eventsPages = events_pages
+      }
+      if (current_issue_page != null) {
+        that.currentIssuesPage = current_issue_page
+      }
+      if (current_event_page != null) {
+        that.currentEventsPage = current_event_page
+      }
+
+      that.computeProgress()
+    }
   })
   return github
+}
+
+/**
+ * Calculate current progress of downloading data. Maximum progress level is 100
+ */
+Parser.prototype.computeProgress = function() {
+  var progress = 0
+  if (this.issuesPages != null && this.eventsPages != null) {
+    progress = Math.floor(50*PER_PAGE/(this.issuesPages*PER_PAGE)) +
+               Math.floor(50*PER_PAGE/(this.eventsPages*PER_PAGE))
+  } else if (this.issuesPages != null) {
+    progress =  Math.floor(50*PER_PAGE/(this.issuesPages*PER_PAGE))
+  } else if (this.eventsPages != null) {
+    progress =  Math.floor(50*PER_PAGE/(this.eventsPages*PER_PAGE))
+  }
+
+  if (this.currentIssuesPage != null) {
+    progress += Math.floor(50*PER_PAGE*(this.currentIssuesPage-1)/(this.issuesPages*PER_PAGE))
+  }
+  if (this.currentEventsPage != null) {
+    progress += Math.floor(50*PER_PAGE*(this.currentEventsPage-1)/(this.eventsPages*PER_PAGE))
+  }
+  this.onProgress(progress)
 }
 
 /**

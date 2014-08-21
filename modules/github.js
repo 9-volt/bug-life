@@ -77,16 +77,42 @@
           results.push.apply(results, res);
 
           var links = (xhr.getResponseHeader('link') || '').split(/\s*,\s*/g),
-              next = _.find(links, function(link) { return /rel="next"/.test(link); });
+              next = _.find(links, function(link) { return /rel="next"/.test(link); }),
+              last = _.find(links, function(link) { return /rel="last"/.test(link); });
 
           if (next) {
             next = (/<(.*)>/.exec(next) || [])[1];
+          }
+
+          var is_issues = /issues\?/.exec(path);
+          var is_events = /issues\/events\?/.exec(path);
+          if (last) {
+            last = (/&page=(\d+)>/.exec(last) || [])[1];
+            if (last) {
+              last = parseInt(last)
+              if (is_issues) {
+                options._onProgress(last, null);
+              }
+              if (is_events) {
+                options._onProgress(null, last);
+              }
+            }
           }
 
           if (!next) {
             cb(err, results);
           } else {
             path = next;
+            var next_page = (/&page=(\d+)/.exec(next) || [])[1];
+            if (next_page) {
+              next_page = parseInt(next_page);
+              if (is_issues) {
+                options._onProgress(null, null, next_page);
+              }
+              if (is_events) {
+                options._onProgress(null, null, null, next_page);
+              }
+            }
             iterate();
           }
         });
