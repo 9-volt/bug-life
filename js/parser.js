@@ -243,12 +243,15 @@ Parser.prototype.prepare_issues = function(issues) {
 Parser.prototype.add_issue_events = function(issues, events) {
   for (var i = 0; i < events.length; i++) {
     var number = events[i].issue.number
-    if (events[i].event === "closed") {
-      this.add_closed_event(issues[number], events[i])
-    } else if (events[i].event === "reopened") {
-      this.add_reopened_event(issues[number], events[i])
-    } else {
-      continue
+    var issue = issues[number]
+    if (typeof issue != "undefined") {
+      if (events[i].event === "closed") {
+        this.add_closed_event(issue, events[i])
+      } else if (events[i].event === "reopened") {
+        this.add_reopened_event(issue, events[i])
+      } else {
+        continue
+      }
     }
   }
   return issues
