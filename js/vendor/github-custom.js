@@ -82,6 +82,9 @@
 
           if (next) {
             next = (/<(.*)>/.exec(next) || [])[1];
+
+            // Extract time from next link. Time is represented as 13 digit number (until 2033)
+            next = next.replace(/\&\d{13}\=/gi, '').replace(/\&\d{13}/gi, '')
           }
 
           var is_issues = /issues\?/.exec(path);
@@ -119,7 +122,7 @@
       })();
     }
 
-    function _appendParams(path, params) {  
+    function _appendParams(path, params) {
       if (!_.isEmpty(params)) {
         var new_path = path + "?";
         for (var key in params) {
@@ -289,18 +292,18 @@
         _request("DELETE", repoPath + "/git/refs/"+ref, options, cb);
       };
 
-      // Create a repo  
+      // Create a repo
       // -------
 
       this.createRepo = function(options, cb) {
         _request("POST", "/user/repos", options, cb);
       };
 
-      // Delete a repo  
-      // --------  
+      // Delete a repo
+      // --------
 
-      this.deleteRepo = function(cb) {  
-        _request("DELETE", repoPath, options, cb);  
+      this.deleteRepo = function(cb) {
+        _request("DELETE", repoPath, options, cb);
       };
 
       // List all tags of a repository
@@ -492,9 +495,9 @@
         _request("POST", repoPath + "/forks", null, cb);
       };
 
-      // Branch repository  
-      // --------  
- 
+      // Branch repository
+      // --------
+
       this.branch = function(oldBranch,newBranch,cb) {
         if(arguments.length === 2 && typeof arguments[1] === "function") {
           cb = newBranch;
@@ -586,24 +589,24 @@
           });
         });
       };
-      
+
       // Delete a file from the tree
       // -------
-      
+
       this.delete = function(branch, path, cb) {
         that.getSha(branch, path, function(err, sha) {
           if (!sha) return cb("not found", null);
           var delPath = repoPath + "/contents/" + path;
           var params = {
             "message": "Deleted " + path,
-            "sha": sha 
+            "sha": sha
           };
           delPath += "?message=" + encodeURIComponent(params.message);
           delPath += "&sha=" + encodeURIComponent(params.sha);
           _request("DELETE", delPath, null, cb);
         })
       }
-      
+
       // Move a file to a new location
       // -------
 
