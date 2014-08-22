@@ -36,7 +36,9 @@ $(function(){
   }
 
   Visuals.prototype.showData = function(data) {
+    console.log(data)
     this.showStackedArea(data)
+    this.showSemiCrircles(data)
   }
 
   Visuals.prototype.showStackedArea = function(data) {
@@ -170,7 +172,7 @@ $(function(){
 
       chart.yAxis.tickFormat(d3.format(',.2f'));
 
-      d3.select('#chart svg')
+      d3.select('#stackedArea svg')
         .datum(processedDataArray)
         .call(chart);
 
@@ -178,6 +180,67 @@ $(function(){
 
       return chart;
     });
+  }
+
+  function dateToDays(str) {
+    return dateToTimestamp(str) / 86400000
+  }
+
+  Visuals.prototype.showSemiCrircles = function(data) {
+    var svg = d3.select('#semiCircles svg')
+      , width = svg[0][0].offsetWidth
+      , start = dateToDays(data.created_at)
+      , today = dateToDays(null)
+      , scale = d3.scale.linear().domain([start, today]).range([0, width])
+      , scaleRadius = d3.scale.linear().domain([0, today - start]).range([0, width])
+
+    console.log(start, today)
+
+    // return
+
+    svg
+      .selectAll("circle")
+      .data(data.issues)
+      .enter()
+      .append('circle')
+      .attr("cy", function (d) {return 0})
+      .attr("cx", function (d) {
+        var from = dateToDays(d.open[0].from)
+          , closed_at = d.open[d.open.length - 1].to
+          , to = dateToDays(closed_at)
+
+        console.log((to + from)/2, scale((to + from)/2))
+        if (closed_at !== null) {
+          return scale((to + from)/2)
+        } else {
+          // Make it quater of the circle with today as center
+          return scale(to)
+        }
+        // return parseInt(Math.random() * 100)
+      })
+      .attr("r", function (d) {
+        var from = dateToDays(d.open[0].from)
+          , closed_at = d.open[d.open.length - 1].to
+          , to = dateToDays(closed_at)
+
+        // console.log(from, to, to - from, scaleRadius(to - from)/2)
+        if (closed_at !== null) {
+          return scaleRadius(to - from) / 2
+        } else {
+          // Make it quater of the circle if it is still open
+          return scaleRadius(to - from)
+        }
+      })
+      .style("fill", function(d) {return 'none'})
+      .style('stroke', function(d) {
+        colors = ['red', 'green', 'blue', 'yellow']
+        return colors[Math.ceil(Math.random() * colors.length)]
+      })
+      .style('stroke-width', function(d) {
+        return 1
+        colors = ['red', 'green', 'blue', 'yellow']
+        return colors[Math.ceil(Math.random() * colors.length)]
+      })
   }
 
   window.Visuals = Visuals
