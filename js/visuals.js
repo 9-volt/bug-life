@@ -4,6 +4,10 @@ $(function(){
     this.init(selector)
   }
 
+  var NO_LABEL_COLOR = '#ccc'
+    , NO_LABEL_TITLE = 'no label'
+    ;
+
   /**
    * Init visuals. One time call
    * @param  {String} selector
@@ -80,7 +84,7 @@ $(function(){
     }
 
     // Add no label
-    processedData['no label'] = {key: 'no label', values: [], time: Object.create(datesMilisecondsRange), color: '#ccc'}
+    processedData[NO_LABEL_TITLE] = {key: NO_LABEL_TITLE, values: [], time: Object.create(datesMilisecondsRange), color: NO_LABEL_COLOR}
 
     return processedData
   }
@@ -103,8 +107,8 @@ $(function(){
       // If issue has no labels than assign 'no label' label
       if (issue.labels.length === 0) {
         issue.labels.push({
-          color: '#ccc'
-        , name: 'no label'
+          color: NO_LABEL_COLOR
+        , name: NO_LABEL_TITLE
         , url: null
         })
       }
@@ -186,6 +190,25 @@ $(function(){
     return dateToTimestamp(str) / 86400000
   }
 
+  function getIssuesColors(data) {
+    var issuesColors = []
+      , issue
+
+    for (var i in data.issues) {
+      issue = data.issues[i]
+
+      if (issue.labels.length === 0) {
+        issuesColors.push([NO_LABEL_COLOR])
+      } else {
+        issuesColors.push(issue.labels.map(function(a){
+          return '#' + a.color
+        }))
+      }
+    }
+
+    return issuesColors
+  }
+
   Visuals.prototype.showSemiCrircles = function(data) {
     var svg = d3.select('#semiCircles svg')
       , width = svg[0][0].offsetWidth
@@ -193,37 +216,34 @@ $(function(){
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([start, today]).range([0, width])
       , scaleRadius = d3.scale.linear().domain([0, today - start]).range([0, width])
-
-    console.log(start, today)
+      , issuesColors = getIssuesColors(data)
 
     // return
+    svg.selectAll("*").remove()
 
     svg
       .selectAll("circle")
       .data(data.issues)
       .enter()
       .append('circle')
-      .attr("cy", function (d) {return 0})
+      .attr("cy", 0)
       .attr("cx", function (d) {
         var from = dateToDays(d.open[0].from)
           , closed_at = d.open[d.open.length - 1].to
           , to = dateToDays(closed_at)
 
-        console.log((to + from)/2, scale((to + from)/2))
         if (closed_at !== null) {
           return scale((to + from)/2)
         } else {
           // Make it quater of the circle with today as center
           return scale(to)
         }
-        // return parseInt(Math.random() * 100)
       })
       .attr("r", function (d) {
         var from = dateToDays(d.open[0].from)
           , closed_at = d.open[d.open.length - 1].to
           , to = dateToDays(closed_at)
 
-        // console.log(from, to, to - from, scaleRadius(to - from)/2)
         if (closed_at !== null) {
           return scaleRadius(to - from) / 2
         } else {
@@ -231,15 +251,21 @@ $(function(){
           return scaleRadius(to - from)
         }
       })
-      .style("fill", function(d) {return 'none'})
+      .style("fill", 'none')
       .style('stroke', function(d) {
-        colors = ['red', 'green', 'blue', 'yellow']
-        return colors[Math.ceil(Math.random() * colors.length)]
+        if (issuesColors.length >= d.number) {
+          return issuesColors[d.number - 1][0]
+        } else {
+          return NO_LABEL_COLOR
+        }
       })
-      .style('stroke-width', function(d) {
-        return 1
-        colors = ['red', 'green', 'blue', 'yellow']
-        return colors[Math.ceil(Math.random() * colors.length)]
+      .style('stroke-opacity', 0.5)
+      .style('stroke-width', 2)
+      .on('mouseover', function(d){
+        d3.select(this).style({'stroke-width': 4, 'stroke-opacity': 0.9})
+      })
+      .on('mouseout', function(d){
+        d3.select(this).style({'stroke-width': 2, 'stroke-opacity': 0.5})
       })
   }
 
