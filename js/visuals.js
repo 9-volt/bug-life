@@ -6,6 +6,8 @@ $(function(){
 
   var NO_LABEL_COLOR = '#ccc'
     , NO_LABEL_TITLE = 'no label'
+    , MARGIN_RIGHT = 40
+    , MARGIN_LEFT = 0
     ;
 
   /**
@@ -158,7 +160,7 @@ $(function(){
   function drawStackedArea(processedDataArray) {
     nv.addGraph(function() {
       var chart = nv.models.stackedAreaChart()
-        .margin({right: 100})
+        .margin({right: MARGIN_RIGHT, left: 0})
         .x(function(d) { return d[0] })
         .y(function(d) { return d[1] })
         .useInteractiveGuideline(true)    // Tooltips which show all data points
@@ -167,14 +169,15 @@ $(function(){
         .showControls(false)              // Allow user to choose 'Stacked', 'Stream', 'Expanded' mode.
         .clipEdge(true)
         // .showLegend(false)
-        // .showXAxis(false)                 // Show X Axis (dates)
+        .showXAxis(false)                 // Hide X Axis (dates)
+        // .showYAxis(false)
 
       //Format x-axis labels with custom function.
       chart.xAxis.tickFormat(function(d) {
         return d3.time.format('%x')(new Date(d))
       });
 
-      chart.yAxis.tickFormat(d3.format(',.2f'));
+      chart.yAxis.tickFormat(d3.format(',.0f'));
 
       d3.select('#stackedArea svg')
         .datum(processedDataArray)
@@ -210,13 +213,18 @@ $(function(){
   }
 
   Visuals.prototype.showSemiCrircles = function(data) {
-    var svg = d3.select('#semiCircles svg')
+    var container = d3.select('#semiCircles')
+      , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
       , start = dateToDays(data.created_at)
       , today = dateToDays(null)
-      , scale = d3.scale.linear().domain([start, today]).range([0, width])
-      , scaleRadius = d3.scale.linear().domain([0, today - start]).range([0, width])
+      , scale = d3.scale.linear().domain([start, today]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
+      , scaleRadius = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
       , issuesColors = getIssuesColors(data)
+
+    container
+      .style('margin-left', MARGIN_LEFT)
+      .style('margin-right', MARGIN_RIGHT + 'px')
 
     // return
     svg.selectAll("*").remove()
