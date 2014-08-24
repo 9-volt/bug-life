@@ -73,13 +73,13 @@ $(function(){
   function lockInput() {
     parsingLocked = true
     $repositoryInput.attr('disabled', 'disabled')
-    $repositoryButton.attr('disabled', 'disabled')
+    $repositoryButton.button('loading')
   }
 
   function unlockInput() {
     parsingLocked = false
     $repositoryInput.removeAttr('disabled')
-    $repositoryButton.removeAttr('disabled')
+    $repositoryButton.button('reset')
   }
 
   /*
