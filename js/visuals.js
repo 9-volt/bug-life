@@ -219,16 +219,14 @@ $(function(){
 
   Visuals.prototype.showSemiCircles = function(data) {
     var container = d3.select('#semiCircles')
+          .style('margin-left', MARGIN_LEFT)
+          .style('margin-right', MARGIN_RIGHT + 'px')
       , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
       , start = dateToDays(data.created_at)
       , today = dateToDays(null)
-      , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
+      , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width])
       , issuesColors = getIssuesColors(data)
-
-    container
-      .style('margin-left', MARGIN_LEFT)
-      .style('margin-right', MARGIN_RIGHT + 'px')
 
     // Remove any old elements
     svg.selectAll("*").remove()
