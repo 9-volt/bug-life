@@ -8,6 +8,8 @@ $(function(){
     , NO_LABEL_TITLE = 'no label'
     , MARGIN_RIGHT = 40
     , MARGIN_LEFT = 0
+    , STROKE_OPACITY = 0.4
+    , STROKE_OPACITY_ACTIVE = 0.9
     ;
 
   /**
@@ -239,7 +241,7 @@ $(function(){
       , width = svg[0][0].offsetWidth
       , start = dateToDays(data.created_at)
       , today = dateToDays(null)
-      , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width])
+      , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
       , issuesColors = getIssuesColors(data)
 
     // By default create new is true
@@ -270,10 +272,10 @@ $(function(){
         .style('stroke-opacity', 0.5)
         .style('stroke-width', 2)
         .on('mouseover', function(d){
-          d3.select(this).style({'stroke-width': 4, 'stroke-opacity': 0.9})
+          d3.select(this).style({'stroke-opacity': STROKE_OPACITY_ACTIVE})
         })
         .on('mouseout', function(d){
-          d3.select(this).style({'stroke-width': 2, 'stroke-opacity': 0.5})
+          d3.select(this).style({'stroke-opacity': STROKE_OPACITY})
         })
     }
 
