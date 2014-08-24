@@ -142,7 +142,6 @@ $(function(){
 
           // Fill label time-value object
           while(from <= to) {
-            console.log(label)
             processedData[label].time[from] += 1
             from += 86400 * 1000 // 3600 * 24 * 1000
           }
