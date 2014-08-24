@@ -13,12 +13,33 @@ input {
   width: 300px;
 }
 
-.graphs {
-  margin: 20px;
-  border: 1px solid #ccc;
+a {
+  color: #2f6f9f;
+}
+
+/* Keep issue numbers out of container */
+#graphs .stackedArea{
+  margin-right: -20px;
+}
+
+/* Hide line between stackedArea and values */
+svg .nv-axis .domain{
+  display: none;
 }
 
 /* Hide axis lines*/
 svg .nv-axis .tick line{
   /*display: none;*/
 }
+
+.lead-list{
+  font-weight: 300;
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .lead-list{
+    font-size: 18px;
+  }
+}
+

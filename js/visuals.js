@@ -6,7 +6,7 @@ $(function(){
 
   var NO_LABEL_COLOR = 'ccc'
     , NO_LABEL_TITLE = 'no label'
-    , MARGIN_RIGHT = 40
+    , MARGIN_RIGHT = 20
     , MARGIN_LEFT = 0
     , STROKE_OPACITY = 0.4
     , STROKE_OPACITY_ACTIVE = 0.9
@@ -21,8 +21,8 @@ $(function(){
 
     // Init semicircles container
     d3.select('#semiCircles')
-      .style('margin-left', MARGIN_LEFT)
-      .style('margin-right', MARGIN_RIGHT + 'px')
+      // .style('margin-left', MARGIN_LEFT)
+      // .style('margin-right', MARGIN_RIGHT + 'px')
 
     // On resize
     var onResize = function(ev){

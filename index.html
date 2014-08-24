@@ -90,31 +90,131 @@
   </script>
 </head>
 <body>
-  <form action="" id="repository-form">
-    <input type="text" name="repository" id="repository" placeholder="Insert repository url" value="ruipgil/scraperjs">
-    <button type="submit">Submit</button>
-  </form>
-  <div class="graphs">
-    <div id="stackedArea" class="stackedArea" style="width: 100%">
-      <svg style="height: 300px"></svg>
+  <header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="/bug-life" class="navbar-brand">Bug life</a>
+      </div>
+      <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="#top">Info</a>
+          </li>
+          <li>
+            <a href="#graphs">Graphs</a>
+          </li>
+          <li>
+            <a href="#examples">Recommended examples</a>
+          </li>
+          <li>
+            <a href="#about">About</a>
+          </li>
+          <li>
+            <a href="#explained">Explained examples</a>
+          </li>
+        </ul>
+      </nav>
     </div>
-    <div id="semiCircles" class="semiCircles" style="width: auto">
-      <svg style="height: 400px"></svg>
+  </header>
+
+  <div class="bs-docs-header" id="content">
+    <div class="container">
+      <h1 id="repo-tiple">Stats</h1>
+      <p id="repo-description">Who's online now</p>
     </div>
   </div>
-  <div class="examples" id="examples">
-    <ul>
-      <li><a href="#" data-github="ruipgil/scraperjs">ruipgil/scraperjs (small and cute graph)</a></li>
-      <li><a href="#" data-github="sahat/satellizer">sahat/satellizer (large empty graph with activity on the right)</a></li>
-      <li><a href="#" data-github="NYTimes/backbone.stickit">NYTimes/backbone.stickit (a graph with colors at the beginning and unlabeled activity at the end)</a></li>
-      <li><a href="#" data-github="tpope/vim-surround">tpope/vim-surround (a growing city with no labels)</a></li>
-      <li><a href="#" data-github="jashkenas/backbone">jashkenas/backbone (huge mountains of data)</a></li>
-    </ul>
+
+  <div class="container bs-docs-container" id="graphs">
+    <div class="row">
+      <div class="col-md-12">
+        <form class="form-horizontal" role="form" id="repository-form">
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">Render</button>
+            </span>
+            <input type="text" class="form-control" id="repository" placeholder="author/repository" value="ruipgil/scraperjs">
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div id="stackedArea" class="stackedArea" style="width: auto">
+          <svg style="height: 300px"></svg>
+        </div>
+        <div id="semiCircles" class="semiCircles" style="width: auto">
+          <svg style="height: 400px"></svg>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="container bs-docs-container" id="examples">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 id="nav" class="page-header">Recommended Examples</h2>
+        <p>Click on a link to load selected example:</p>
+        <div class="examples">
+          <ul>
+            <li><a href="#" data-github="ruipgil/scraperjs">ruipgil/scraperjs (small and cute graph)</a></li>
+            <li><a href="#" data-github="sahat/satellizer">sahat/satellizer (large empty graph with activity on the right)</a></li>
+            <li><a href="#" data-github="NYTimes/backbone.stickit">NYTimes/backbone.stickit (a graph with colors at the beginning and unlabeled activity at the end)</a></li>
+            <li><a href="#" data-github="tpope/vim-surround">tpope/vim-surround (a growing city with no labels)</a></li>
+            <li><a href="#" data-github="jashkenas/backbone">jashkenas/backbone (huge mountains of data)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container bs-docs-container" id="about">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 id="nav" class="page-header">About</h2>
+        <p class="lead">Bug-life is a visualization of a repository issues from 2 perspectives:</p>
+        <ul class="lead-list">
+          <li>Number of open issues at a given point of time during the lifetime of a repository</li>
+          <li>Issues lifespan (from their creation until their closing)</li>
+        </ul>
+        <p class="lead">It allows to see ...</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container bs-docs-container" id="explained">
+    <div class="row">
+      <div class="col-md-12">
+        <h2 id="nav" class="page-header">Explained Examples</h2>
+        <h3>Example one</h3>
+        <p>Here will be an image with explications</p>
+        <h3>Example two</h3>
+        <p>Here will be another example with explications</p>
+        <h3>Your own example</h3>
+        <p>Do you want your own example here? Create a <a target="_blank" href="https://github.com/9-volt/bug-life">pull request</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bs-docs-footer" role="contentinfo">
+    <div class="container">
+      <p>Built by <a href="https://github.com/bumbu" target="_blank">bumbu</a> and <a href="https://github.com/ana-balica" target="_blank">Ana Balica</a>.</p>
+      <p>Code licensed under <a href="https://github.com/9-volt/bug-life/blob/master/LICENSE" target="_blank">MIT</a>. Code available on <a href="https://github.com/9-volt/bug-life">9-volt/bug-life</a></p>
+      <p>The authors do not hold any responsibility for displayed data.</p>
+    </div>
+  </footer>
+
   <div id="login-popup" style="display: none;">
     <p>Oops, you have exceeded your rate limit or you have no permissions to view
     this repo issues. In any case, please authenticate to proceed :)
     <button id="login">Login with Github</button>
   </div>
+
 </body>
 </html>
