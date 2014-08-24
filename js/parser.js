@@ -37,6 +37,11 @@ Parser.prototype.onError = function (message) {}
 Parser.prototype.onProgress = function(progress) {}
 
 /**
+ * When rate limit exceedes, require authentication
+ */
+Parser.prototype.onAuthRequired = function(repository_uri) {}
+
+/**
  * Number of pages for issues
  * @type {Integer}
  */
@@ -59,6 +64,12 @@ Parser.prototype.currentIssuesPage = null
  * @type {Integer}
  */
 Parser.prototype.currentEventsPage = null
+
+/**
+ * Github token for auth requests
+ * @type {String}
+ */
+Parser.prototype.token = getCookie("token")
 
 /**
  * Set to null all attributes
@@ -88,40 +99,13 @@ Parser.prototype.parse = function(repository_uri) {
   var final_repo_info = {}
   repo.show(function(err, repo) {
     if (err !== null) {
-      return that.onError("unknown-error")
+      return that.checkError(err)
     }
     final_repo_info.name = repo.name
     final_repo_info.created_at = formatDate(new Date(repo.created_at))
     final_repo_info.url = repo.url
-  })
 
-  var issues = github.getIssues(username, reponame)
-  var issues_events = github.getIssuesEvents(username, reponame)
-  issues.list_all({"state": "all", "per_page": PER_PAGE}, function(err, issues) {
-    if (err !== null) {
-      return that.onError("unknown-error")
-    }
-    final_repo_info.labels = that.get_labels(issues)
-    var all_issues = issues.filter(is_not_pull_request)
-    if (all_issues.length === 0) {
-      return that.onError("no-issues")
-    }
-
-    issues_events.list_all({"per_page": PER_PAGE}, function(err, issues_events) {
-      if (err !== null) {
-        return that.onError("unknown-error")
-      }
-      issues_events.reverse()
-      var issues = that.get_issues_from_events(issues_events)
-      var events = issues_events.filter(is_of_type)
-      events = events.filter(is_not_pull_request_event)
-      final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
-      var hash_issues = that.prepare_issues(all_issues)
-      that.add_issue_events(hash_issues, events)
-      final_repo_info.issues = that.tranform_issues(hash_issues)
-      that.onProgress(100)
-      that.afterParse(final_repo_info)
-    })
+    that.fillIssuesData(final_repo_info, github, {'username': username, 'reponame': reponame})
   })
 }
 
@@ -135,7 +119,7 @@ Parser.prototype.auth = function() {
     // insert here github token
     // can't be set as env vars, because it's client-side javascript
     // therefore hardcode all the tokens!
-      token: ""
+      token: that.token
     , auth: "oauth"
     , _onProgress: function(issues_pages, events_pages, current_issue_page, current_event_page) {
       if (issues_pages != null) {
@@ -155,6 +139,46 @@ Parser.prototype.auth = function() {
     }
   })
   return github
+}
+
+/**
+ * Fill in the repo data with labels and issues
+ * @param  {Object} final_repo_info
+ * @param  {Object} github
+ * @param  {Object} options
+ */
+Parser.prototype.fillIssuesData = function(final_repo_info, github, options) {
+  var that = this
+  var username = options.username
+  var reponame = options.reponame
+  var issues = github.getIssues(username, reponame)
+  var issues_events = github.getIssuesEvents(username, reponame)
+  issues.list_all({"state": "all", "per_page": PER_PAGE}, function(err, issues) {
+    if (err !== null) {
+      return that.checkError(err)
+    }
+    final_repo_info.labels = that.get_labels(issues)
+    var all_issues = issues.filter(is_not_pull_request)
+    if (all_issues.length === 0) {
+      return that.onError("no-issues")
+    }
+
+    issues_events.list_all({"per_page": PER_PAGE}, function(err, issues_events) {
+      if (err !== null) {
+        return that.checkError(err)
+      }
+      issues_events.reverse()
+      var issues = that.get_issues_from_events(issues_events)
+      var events = issues_events.filter(is_of_type)
+      events = events.filter(is_not_pull_request_event)
+      final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
+      var hash_issues = that.prepare_issues(all_issues)
+      that.add_issue_events(hash_issues, events)
+      final_repo_info.issues = that.tranform_issues(hash_issues)
+      that.onProgress(100)
+      that.afterParse(final_repo_info)
+    })
+  })
 }
 
 /**
@@ -293,6 +317,18 @@ Parser.prototype.tranform_issues = function(hash_issues) {
 }
 
 /**
+ * Check type of error and perform action accordingly
+ * @param  {Object} error
+ */
+Parser.prototype.checkError = function(error) {
+  if (error.request.status === 403) {
+    var repo_uri = /\/repos\/([\w-]+\/[\w-]+)/.exec(error.path)[1]
+    return this.onAuthRequired(repo_uri)
+  }
+  return this.onError("unknown-error")
+}
+
+/**
  * Check if a value is in an array of objects with property "name"
  * @param  {Array} list
  * @param  {String} name
@@ -356,6 +392,22 @@ function is_not_pull_request_event(element) {
  */
 function pad2(number) {
   return (number < 10 ? '0' : '') + number
+}
+
+/**
+ * Get value of a specific cookie
+ * @param  {String} cname
+ * @return {String}
+ */
+function getCookie(cname) {
+  var name = cname + "="
+  var ca = document.cookie.split(';')
+  for(var i=0; i<ca.length; i++) {
+      var c = ca[i]
+      while (c.charAt(0)==' ') c = c.substring(1)
+      if (c.indexOf(name) != -1) return c.substring(name.length,c.length)
+  }
+  return "";
 }
 
 /**

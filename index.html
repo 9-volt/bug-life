@@ -16,6 +16,7 @@
   <script src="js/vendor/github-custom.js"></script>
   <script src="js/vendor/d3.js"></script>
   <script src="js/vendor/nv.d3.js"></script>
+  <script src="js/vendor/hello.min.js"></script>
 
   <script src="js/parser.js"></script>
   <script src="js/visuals.js"></script>
@@ -63,6 +64,28 @@
       if ($repository.val()) {
         parser.parse($repository.val())
       }
+
+      // Init authentication
+      hello.init({github : "baf32f7bbb8d975e64f3"})
+
+      // Show the popup with auth
+      var repo_uri = ''
+      parser.onAuthRequired = function(repository_uri) {
+        $("#login-popup").show()
+        repo_uri = repository_uri
+      }
+
+      // Authenticate with github
+      $("#login").on("click", function(event) {
+        hello('github').login({redirect_uri:'redirect.html'}, function(ev) {
+          if (!ev.hasOwnProperty("error")) {
+            var github = hello("github").getAuthResponse()
+            parser.token = github.access_token
+            document.cookie = "token=" + github.access_token
+            parser.parse(repo_uri)
+          }
+        })
+      })
     })
   </script>
 </head>
@@ -87,6 +110,11 @@
       <li><a href="#" data-github="tpope/vim-surround">tpope/vim-surround (a growing city with no labels)</a></li>
       <li><a href="#" data-github="jashkenas/backbone">jashkenas/backbone (huge mountains of data)</a></li>
     </ul>
+  </div>
+  <div id="login-popup" style="display: none;">
+    <p>Oops, you have exceeded your rate limit or you have no permissions to view
+    this repo issues. In any case, please authenticate to proceed :)
+    <button id="login">Login with Github</button>
   </div>
 </body>
 </html>
