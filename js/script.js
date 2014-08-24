@@ -123,6 +123,9 @@ $(function(){
 
       // Run parser
       parser.parse(val)
+
+      // Change button state
+      checkButtonState()
     } else if (val === null) {
       // Display warning
       showAlert('<strong>Wrong format!</strong> Please insert repository slug as <code>user/name</code> or <code>https://github.com/user/name</code>', 'warning')
@@ -146,6 +149,26 @@ $(function(){
   if ($repositoryInput.val()) {
     checkAndParse()
   }
+
+  function checkButtonState(){
+    var val = parseInput($repositoryInput.val())
+
+    if (val !== null && val !== lastInputValue) {
+      $repositoryButton.addClass('btn-primary')
+    } else {
+      $repositoryButton.removeClass('btn-primary')
+    }
+  }
+
+  // On input content changes (but is not submitted)
+  $repositoryInput.on('change paste keyup', function(ev){
+    // Do not process when Enter is pressed
+    if (ev.type === 'keyup' && ev.keyCode === 13) {
+      return;
+    }
+
+    checkButtonState()
+  })
 
   /*
     Authentication
