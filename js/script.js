@@ -83,11 +83,13 @@ $(function(){
     }
   }
 
-  // On form submit
-  $('#repository-form').submit(function(ev){
-    ev.preventDefault()
-
+  function checkAndParse() {
     var val = parseInput($repository.val())
+
+    // Update input value with parsed value
+    if (val !== null && $repository.val() !== val) {
+      $repository.val(val)
+    }
 
     if (val !== null && val !== lastInputValue) {
       hideAlert()
@@ -95,31 +97,29 @@ $(function(){
       // Cache last value
       lastInputValue = val
 
-      // Update input value with parsed value
-      if ($repository.val() !== val) {
-        $repository.val(val)
-      }
-
       // Run parser
       parser.parse(val)
     } else if (val === null) {
       // Display warning
       showAlert('<strong>Wrong format!</strong> Please insert repository slug as <code>user/name</code> or <code>https://github.com/user/name</code>', 'warning')
     }
+  }
+
+  // On form submit
+  $('#repository-form').submit(function(ev){
+    ev.preventDefault()
+    checkAndParse()
   })
 
   $('#examples').on('click', 'a', function(ev){
     ev.preventDefault()
-
-    var $this = $(this)
-
-    $repository.val($this.data('github'))
-    parser.parse($this.data('github'))
+    $repository.val($(this).data('github'))
+    checkAndParse()
   })
 
   // If initial form has a value
   if ($repository.val()) {
-    parser.parse($repository.val())
+    checkAndParse()
   }
 
   // Init authentication
