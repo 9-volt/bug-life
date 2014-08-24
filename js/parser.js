@@ -102,6 +102,7 @@ Parser.prototype.parse = function(repository_uri) {
       return that.checkError(err)
     }
     final_repo_info.name = repo.name
+    final_repo_info.description = repo.description
     final_repo_info.created_at = formatDate(new Date(repo.created_at))
     final_repo_info.url = repo.url
 
