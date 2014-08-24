@@ -6,6 +6,30 @@ $(function(){
     , $repoDescription = $('#repo-description')
     , loadingText = 'Loading...'
     , errorText = 'Error'
+    , $repositoryAlert = $('#repository-alert')
+
+  /*
+    Alert
+  */
+
+  /**
+   * Display alert message
+   * @param  {String} message Message may contain html elements
+   * @param  {String} type    success, info, warning or danger. info by default
+   */
+  function showAlert(message, type) {
+    type = type !== void 0 ? type : 'info'
+
+    $repositoryAlert
+      .html(message)
+      .removeClass('alert-success alert-info alert-warning alert-danger')
+      .addClass('alert-' + type)
+      .show()
+  }
+
+  function hideAlert() {
+    $repositoryAlert.hide()
+  }
 
 
   /*
@@ -25,9 +49,11 @@ $(function(){
     visuals.showData(data)
   }
 
-  parser.onError = function(){
+  parser.onError = function(message){
     $repoTitle.text(errorText)
     $repoDescription.text(errorText)
+
+    showAlert('<strong>Error occured!</strong> ' + message, 'danger')
 
     visuals.showError()
   }
@@ -62,9 +88,10 @@ $(function(){
     ev.preventDefault()
 
     var val = parseInput($repository.val())
-    console.log(val)
 
-    if (val != null && val !== lastInputValue) {
+    if (val !== null && val !== lastInputValue) {
+      hideAlert()
+
       // Cache last value
       lastInputValue = val
 
@@ -75,6 +102,9 @@ $(function(){
 
       // Run parser
       parser.parse(val)
+    } else if (val === null) {
+      // Display warning
+      showAlert('<strong>Wrong format!</strong> Please insert repository slug as <code>user/name</code> or <code>https://github.com/user/name</code>', 'warning')
     }
   })
 

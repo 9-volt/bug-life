@@ -39,7 +39,7 @@ $(function(){
   }
 
   Visuals.prototype.showError = function(message) {
-    console.log('Visual Error', message)
+    // console.log('Visual Error', message)
   }
 
   /**

@@ -162,7 +162,7 @@ $(function(){
       final_repo_info.labels = that.get_labels(issues)
       var all_issues = issues.filter(is_not_pull_request)
       if (all_issues.length === 0) {
-        return that.onError("no-issues")
+        return that.onError("Specified repository has no issues. Please try another one.")
       }
 
       issues_events.list_all({"per_page": PER_PAGE}, function(err, issues_events) {
@@ -330,8 +330,11 @@ $(function(){
     if (error.request.status === 403) {
       var repo_uri = /\/repos\/([\w-]+\/[\w-]+)/.exec(error.path)[1]
       return this.onAuthRequired(repo_uri)
+    } else if (error.request.status === 404) {
+      return this.onError("Resource not found. Check if repository slug is correct.")
+    } else {
+      return this.onError("Unknown error.")
     }
-    return this.onError("unknown-error")
   }
 
   /**
