@@ -15,7 +15,21 @@ $(function(){
    * @param  {String} selector
    */
   Visuals.prototype.init = function(selector) {
+    var that = this
 
+    // Init semicircles container
+    d3.select('#semiCircles')
+      .style('margin-left', MARGIN_LEFT)
+      .style('margin-right', MARGIN_RIGHT + 'px')
+
+    // On resize
+    var onResize = function(ev){
+      if (that.lastData != null) {
+        that.showSemiCircles(that.lastData, false)
+      }
+    }
+
+    window.addEventListener('resize', onResize)
   }
 
   Visuals.prototype.showLoading = function() {
@@ -45,6 +59,8 @@ $(function(){
     console.log(data)
     this.showStackedArea(data)
     this.showSemiCircles(data)
+
+    this.lastData = data
   }
 
   Visuals.prototype.showStackedArea = function(data) {
@@ -217,10 +233,8 @@ $(function(){
     return issuesColors
   }
 
-  Visuals.prototype.showSemiCircles = function(data) {
+  Visuals.prototype.showSemiCircles = function(data, createNew) {
     var container = d3.select('#semiCircles')
-          .style('margin-left', MARGIN_LEFT)
-          .style('margin-right', MARGIN_RIGHT + 'px')
       , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
       , start = dateToDays(data.created_at)
@@ -228,55 +242,73 @@ $(function(){
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width])
       , issuesColors = getIssuesColors(data)
 
-    // Remove any old elements
-    svg.selectAll("*").remove()
+    // By default create new is true
+    createNew = createNew === void 0 ? true : createNew
 
-    svg
-      .selectAll("circle")
-      .data(data.issues)
-      .enter()
-      .append('circle')
-      .attr("cy", 0)
-      .attr("cx", function (d) {
-        var from = dateToDays(d.open[0].from)
-          , closed_at = d.open[d.open.length - 1].to
-          , to = dateToDays(closed_at)
+    if (createNew) {
+      // Remove any old elements
+      svg.selectAll("*").remove()
+    }
 
-        if (closed_at !== null) {
-          return scale((to + from)/2 - start)
-        } else {
-          // Make it quater of the circle with today as center
-          return scale(to - start)
-        }
-      })
-      .attr("r", function (d) {
-        var from = dateToDays(d.open[0].from)
-          , closed_at = d.open[d.open.length - 1].to
-          , to = dateToDays(closed_at)
+    if (createNew) {
+      this.semiCircles = svg
+        .selectAll("circle")
+        .data(data.issues)
+        .enter()
+        .append('circle')
+        .attr("cy", 0)
+        .attr('cy', 0)
+        .attr('r', 0)
+        .style("fill", 'none')
+        .style('stroke', function(d) {
+          if (issuesColors.length >= d.number) {
+            return issuesColors[d.number][0]
+          } else {
+            return NO_LABEL_COLOR
+          }
+        })
+        .style('stroke-opacity', 0.5)
+        .style('stroke-width', 2)
+        .on('mouseover', function(d){
+          d3.select(this).style({'stroke-width': 4, 'stroke-opacity': 0.9})
+        })
+        .on('mouseout', function(d){
+          d3.select(this).style({'stroke-width': 2, 'stroke-opacity': 0.5})
+        })
+    }
 
-        if (closed_at !== null) {
-          return scale(to - from + 1) / 2
-        } else {
-          // Make it quater of the circle if it is still open
-          return scale(to - from + 0.5)
-        }
-      })
-      .style("fill", 'none')
-      .style('stroke', function(d) {
-        if (issuesColors.length >= d.number) {
-          return issuesColors[d.number][0]
-        } else {
-          return NO_LABEL_COLOR
-        }
-      })
-      .style('stroke-opacity', 0.5)
-      .style('stroke-width', 2)
-      .on('mouseover', function(d){
-        d3.select(this).style({'stroke-width': 4, 'stroke-opacity': 0.9})
-      })
-      .on('mouseout', function(d){
-        d3.select(this).style({'stroke-width': 2, 'stroke-opacity': 0.5})
-      })
+    // Only if we have semicircles
+    if (this.semiCircles != null) {
+      // Attributes that vary on window resize
+      this.semiCircles
+        .data(data.issues)
+        .transition()
+          .duration(500)
+        .attr("cx", function (d) {
+          var from = dateToDays(d.open[0].from)
+            , closed_at = d.open[d.open.length - 1].to
+            , to = dateToDays(closed_at)
+
+          if (closed_at !== null) {
+            return scale((to + from)/2 - start)
+          } else {
+            // Make it quater of the circle with today as center
+            return scale(to - start)
+          }
+        })
+        .attr("r", function (d) {
+          var from = dateToDays(d.open[0].from)
+            , closed_at = d.open[d.open.length - 1].to
+            , to = dateToDays(closed_at)
+
+          if (closed_at !== null) {
+            return scale(to - from + 1) / 2
+          } else {
+            // Make it quater of the circle if it is still open
+            return scale(to - from + 0.5)
+          }
+        })
+    }
   }
 
   window.Visuals = Visuals
