@@ -1,12 +1,14 @@
 $(function(){
   var parser = new Parser()
     , visuals = new Visuals('graph')
-    , $repository = $('#repository')
+    , $repositoryInput = $('#repository-input')
+    , $repositoryButton = $('#repository-button')
     , $repoTitle = $('#repo-title')
     , $repoDescription = $('#repo-description')
     , loadingText = 'Loading...'
     , errorText = 'Error'
     , $repositoryAlert = $('#repository-alert')
+    , parsingLocked = false
 
   /*
     Alert
@@ -38,6 +40,7 @@ $(function(){
   parser.beforeParse = function(){
     $repoTitle.text(loadingText)
     $repoDescription.text(loadingText)
+    lockInput()
 
     visuals.showLoading()
   }
@@ -45,6 +48,7 @@ $(function(){
   parser.afterParse = function(data){
     $repoTitle.text(data.name || '')
     $repoDescription.text(data.description || '')
+    unlockInput()
 
     visuals.showData(data)
   }
@@ -52,6 +56,7 @@ $(function(){
   parser.onError = function(message){
     $repoTitle.text(errorText)
     $repoDescription.text(errorText)
+    unlockInput()
 
     showAlert('<strong>Error occured!</strong> ' + message, 'danger')
 
@@ -63,9 +68,23 @@ $(function(){
   }
 
   /*
+    Lock input while loading
+  */
+  function lockInput() {
+    parsingLocked = true
+    $repositoryInput.attr('disabled', 'disabled')
+    $repositoryButton.attr('disabled', 'disabled')
+  }
+
+  function unlockInput() {
+    parsingLocked = false
+    $repositoryInput.removeAttr('disabled')
+    $repositoryButton.removeAttr('disabled')
+  }
+
+  /*
     On page processing
   */
-
   var lastInputValue = null
 
   function parseInput(str) {
@@ -84,11 +103,16 @@ $(function(){
   }
 
   function checkAndParse() {
-    var val = parseInput($repository.val())
+    // Do not check if script is still working
+    if (parsingLocked) {
+      return
+    }
+
+    var val = parseInput($repositoryInput.val())
 
     // Update input value with parsed value
-    if (val !== null && $repository.val() !== val) {
-      $repository.val(val)
+    if (val !== null && $repositoryInput.val() !== val) {
+      $repositoryInput.val(val)
     }
 
     if (val !== null && val !== lastInputValue) {
@@ -111,17 +135,21 @@ $(function(){
     checkAndParse()
   })
 
+  // On clicking examples links
   $('#examples').on('click', 'a', function(ev){
     ev.preventDefault()
-    $repository.val($(this).data('github'))
+    $repositoryInput.val($(this).data('github'))
     checkAndParse()
   })
 
   // If initial form has a value
-  if ($repository.val()) {
+  if ($repositoryInput.val()) {
     checkAndParse()
   }
 
+  /*
+    Authentication
+  */
   // Init authentication
   hello.init({github : "baf32f7bbb8d975e64f3"})
 
