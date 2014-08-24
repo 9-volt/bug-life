@@ -9,6 +9,9 @@ $(function(){
     , errorText = 'Error'
     , $repositoryAlert = $('#repository-alert')
     , parsingLocked = false
+    , $graphs = $('#graphs')
+    , $progress = $('#progress')
+    , $progressBar = $progress.children('.progress-bar')
 
   /*
     Alert
@@ -33,6 +36,13 @@ $(function(){
     $repositoryAlert.hide()
   }
 
+  function setProgress(progress) {
+    $progressBar
+      .attr('aria-valuenow', progress)
+      .width(progress + '%')
+      .text(progress + '%')
+  }
+
 
   /*
     Parser callbacks
@@ -42,6 +52,9 @@ $(function(){
     $repoDescription.text(loadingText)
     lockInput()
 
+    $graphs.hide()
+    $progress.show()
+
     visuals.showLoading()
   }
 
@@ -49,6 +62,10 @@ $(function(){
     $repoTitle.text(data.name || '')
     $repoDescription.text(data.description || '')
     unlockInput()
+
+    $progress.hide()
+    setProgress(0)
+    $graphs.show()
 
     visuals.showData(data)
   }
@@ -58,13 +75,16 @@ $(function(){
     $repoDescription.text(errorText)
     unlockInput()
 
+    $progress.hide()
+    setProgress(0)
+
     showAlert('<strong>Error occured!</strong> ' + message, 'danger')
 
     visuals.showError()
   }
 
   parser.onProgress = function(progress){
-    console.log('Progress', progress)
+    setProgress(progress)
   }
 
   /*

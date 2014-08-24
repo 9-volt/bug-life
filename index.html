@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <div class="container bs-docs-container" id="graphs">
+  <div class="container bs-docs-container">
     <div class="row">
       <div class="col-md-12">
         <form class="form-horizontal" role="form" id="repository-form">
@@ -74,6 +74,11 @@
 
     <div class="row">
       <div class="col-md-12">
+        <div class="progress" id="progress">
+          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
+        </div>
+      </div>
+      <div class="col-md-12" id="graphs">
         <div id="stackedArea" class="stackedArea" style="width: auto">
           <svg style="height: 300px"></svg>
         </div>

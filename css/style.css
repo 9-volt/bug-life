@@ -56,3 +56,13 @@ svg .nv-axis .tick line{
     padding-bottom: 40px;
   }
 }
+
+#graphs {
+  display: none;
+}
+
+/* Progress bar */
+#progress {
+  margin: 20px 0;
+  display: none;
+}
