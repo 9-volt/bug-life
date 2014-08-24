@@ -172,7 +172,6 @@ Parser.prototype.fillIssuesData = function(final_repo_info, github, options) {
       var issues = that.get_issues_from_events(issues_events)
       var events = issues_events.filter(is_of_type)
       events = events.filter(is_not_pull_request_event)
-      final_repo_info.labels = that.get_labels(issues, final_repo_info.labels)
       var hash_issues = that.prepare_issues(all_issues)
       that.add_issue_events(hash_issues, events)
       final_repo_info.issues = that.tranform_issues(hash_issues)
@@ -246,15 +245,20 @@ Parser.prototype.get_issues_from_events = function(events) {
 Parser.prototype.prepare_issues = function(issues) {
   var issues_obj = {}
   for (var i = 0; i < issues.length; i++) {
-    issues_obj[issues[i].number] = {
-        "url": issues[i].url
-      , "title": issues[i].title
-      , "state": issues[i].state
+    var issue = issues[i]
+    var labels = []
+    for (var j = 0; j < issue.labels.length; j++) {
+      labels.push(issue.labels[j].name)
+    }
+    issues_obj[issue.number] = {
+        "url": issue.url
+      , "title": issue.title
+      , "state": issue.state
       , "open": [{
-          "from": formatDate(new Date(issues[i].created_at))
-        , "to": issues[i].closed_at === null ? null : formatDate(new Date(issues[i].closed_at))
+          "from": formatDate(new Date(issue.created_at))
+        , "to": issue.closed_at === null ? null : formatDate(new Date(issue.closed_at))
       }]
-      , "labels": issues[i].labels
+      , "labels": labels
     }
   }
   return issues_obj
