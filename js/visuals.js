@@ -126,11 +126,7 @@ $(function(){
 
       // If issue has no labels than assign 'no label' label
       if (issue.labels.length === 0) {
-        issue.labels.push({
-          color: NO_LABEL_COLOR
-        , name: NO_LABEL_TITLE
-        , url: null
-        })
+        issue.labels.push(NO_LABEL_TITLE)
       }
 
       // For each label
@@ -146,7 +142,8 @@ $(function(){
 
           // Fill label time-value object
           while(from <= to) {
-            processedData[label.name].time[from] += 1
+            console.log(label)
+            processedData[label].time[from] += 1
             from += 86400 * 1000 // 3600 * 24 * 1000
           }
         }
@@ -216,6 +213,16 @@ $(function(){
     return dateToTimestamp(str) / 86400000
   }
 
+  function getLabelColor(data, labelName) {
+    for (var l in data.labels) {
+      if (data.labels[l].name === labelName) {
+        return data.labels[l].color
+      }
+    }
+
+    return NO_LABEL_COLOR
+  }
+
   function getIssuesColors(data) {
     var issuesColors = []
       , issue
@@ -226,8 +233,8 @@ $(function(){
       if (issue.labels.length === 0) {
         issuesColors[issue.number] = ['#' + NO_LABEL_COLOR]
       } else {
-        issuesColors[issue.number] = issue.labels.map(function(a){
-          return '#' + a.color
+        issuesColors[issue.number] = issue.labels.map(function(label){
+          return '#' + getLabelColor(data, label)
         })
       }
     }
