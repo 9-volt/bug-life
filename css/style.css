@@ -32,6 +32,7 @@ svg .nv-axis .tick line{
   /*display: none;*/
 }
 
+/* Description lead list */
 .lead-list{
   font-weight: 300;
   font-size: 14px;
@@ -43,3 +44,15 @@ svg .nv-axis .tick line{
   }
 }
 
+/* Header sizes */
+.bs-docs-header {
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+
+@media (min-width: 768px) {
+  .bs-docs-header {
+    padding-top: 28px;
+    padding-bottom: 40px;
+  }
+}

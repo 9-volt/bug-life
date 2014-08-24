@@ -2,16 +2,29 @@ $(function(){
   var parser = new Parser()
     , visuals = new Visuals('graph')
     , $repository = $('#repository')
+    , $repoTitle = $('#repo-title')
+    , $repoDescription = $('#repo-description')
+    , loadingText = 'Loading...'
+    , errorText = 'Error'
 
   parser.beforeParse = function(){
+    $repoTitle.text(loadingText)
+    $repoDescription.text(loadingText)
+
     visuals.showLoading()
   }
 
   parser.afterParse = function(data){
+    $repoTitle.text(data.name || '')
+    $repoDescription.text(data.description || '')
+
     visuals.showData(data)
   }
 
   parser.onError = function(){
+    $repoTitle.text(errorText)
+    $repoDescription.text(errorText)
+
     visuals.showError()
   }
 
@@ -37,7 +50,7 @@ $(function(){
     parser.parse($this.data('github'))
   })
 
-  // If initially form has a value
+  // If initial form has a value
   if ($repository.val()) {
     parser.parse($repository.val())
   }
