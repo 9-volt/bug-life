@@ -48,6 +48,15 @@
         }
       })
 
+      $('#examples').on('click', 'a', function(ev){
+        ev.preventDefault()
+
+        var $this = $(this)
+
+        $repository.val($this.data('github'))
+        parser.parse($this.data('github'))
+      })
+
       // If initially form has a value
       if ($repository.val()) {
         parser.parse($repository.val())
@@ -67,6 +76,15 @@
     <div id="semiCircles" class="semiCircles" style="width: auto">
       <svg style="height: 400px"></svg>
     </div>
+  </div>
+  <div class="examples" id="examples">
+    <ul>
+      <li><a href="#" data-github="NYTimes/backbone.stickit">NYTimes/backbone.stickit</a></li>
+      <li><a href="#" data-github="ruipgil/scraperjs">ruipgil/scraperjs</a></li>
+      <li><a href="#" data-github="tpope/vim-surround">tpope/vim-surround</a></li>
+      <li><a href="#" data-github="sahat/satellizer">sahat/satellizer</a></li>
+      <li><a href="#" data-github="jashkenas/backbone">jashkenas/backbone</a></li>
+    </ul>
   </div>
 </body>
 </html>
