@@ -48,6 +48,7 @@ svg .nv-axis .tick line{
 .bs-docs-header {
   padding-top: 20px;
   padding-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 @media (min-width: 768px) {
@@ -55,6 +56,11 @@ svg .nv-axis .tick line{
     padding-top: 28px;
     padding-bottom: 40px;
   }
+}
+
+/* Repository input form */
+#repository-form .height-placeholder{
+  height: 10px;
 }
 
 #graphs {

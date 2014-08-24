@@ -160,7 +160,6 @@ $(function(){
 
   // On clicking examples links
   $('#examples').on('click', 'a', function(ev){
-    ev.preventDefault()
     $repositoryInput.val($(this).data('github'))
     checkAndParse()
   })
