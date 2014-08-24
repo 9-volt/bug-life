@@ -4,7 +4,7 @@ $(function(){
     this.init(selector)
   }
 
-  var NO_LABEL_COLOR = '#ccc'
+  var NO_LABEL_COLOR = 'ccc'
     , NO_LABEL_TITLE = 'no label'
     , MARGIN_RIGHT = 40
     , MARGIN_LEFT = 0
@@ -34,7 +34,7 @@ $(function(){
   function dateToTimestamp(str) {
     if (str == null) {
       // Today
-      return Date.now() - (Date.now() % 86400000)
+      return Math.ceil(Date.now() / 86400000) * 86400000
     } else {
       var d = str.match(/\d+/g)
       return Date.UTC(d[0], d[1] - 1, d[2])
@@ -44,7 +44,7 @@ $(function(){
   Visuals.prototype.showData = function(data) {
     console.log(data)
     this.showStackedArea(data)
-    this.showSemiCrircles(data)
+    this.showSemiCircles(data)
   }
 
   Visuals.prototype.showStackedArea = function(data) {
@@ -66,7 +66,7 @@ $(function(){
   function bootstrapStackedAreaObject(data) {
     var datesMilisecondsRange = {}
       , start = dateToTimestamp(data.created_at)
-      , today = dateToTimestamp(null)
+      , today = dateToTimestamp(null) + 1
 
     // Fill dates range
     while (start < today) {
@@ -86,7 +86,7 @@ $(function(){
     }
 
     // Add no label
-    processedData[NO_LABEL_TITLE] = {key: NO_LABEL_TITLE, values: [], time: Object.create(datesMilisecondsRange), color: NO_LABEL_COLOR}
+    processedData[NO_LABEL_TITLE] = {key: NO_LABEL_TITLE, values: [], time: Object.create(datesMilisecondsRange), color: '#' + NO_LABEL_COLOR}
 
     return processedData
   }
@@ -127,7 +127,7 @@ $(function(){
           to = dateToTimestamp(open.to)
 
           // Fill label time-value object
-          while(from < to) {
+          while(from <= to) {
             processedData[label.name].time[from] += 1
             from += 86400 * 1000 // 3600 * 24 * 1000
           }
@@ -160,7 +160,11 @@ $(function(){
   function drawStackedArea(processedDataArray) {
     nv.addGraph(function() {
       var chart = nv.models.stackedAreaChart()
-        .margin({right: MARGIN_RIGHT, left: 0})
+        .margin({
+          right: MARGIN_RIGHT
+        , left: 0
+        , bottom: 10
+        })
         .x(function(d) { return d[0] })
         .y(function(d) { return d[1] })
         .useInteractiveGuideline(true)    // Tooltips which show all data points
@@ -171,6 +175,7 @@ $(function(){
         // .showLegend(false)
         .showXAxis(false)                 // Hide X Axis (dates)
         // .showYAxis(false)
+        .showLegend(false)                // Hide legend
 
       //Format x-axis labels with custom function.
       chart.xAxis.tickFormat(function(d) {
@@ -201,32 +206,31 @@ $(function(){
       issue = data.issues[i]
 
       if (issue.labels.length === 0) {
-        issuesColors.push([NO_LABEL_COLOR])
+        issuesColors[issue.number] = ['#' + NO_LABEL_COLOR]
       } else {
-        issuesColors.push(issue.labels.map(function(a){
+        issuesColors[issue.number] = issue.labels.map(function(a){
           return '#' + a.color
-        }))
+        })
       }
     }
 
     return issuesColors
   }
 
-  Visuals.prototype.showSemiCrircles = function(data) {
+  Visuals.prototype.showSemiCircles = function(data) {
     var container = d3.select('#semiCircles')
       , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
       , start = dateToDays(data.created_at)
       , today = dateToDays(null)
-      , scale = d3.scale.linear().domain([start, today]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
-      , scaleRadius = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
+      , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width - MARGIN_RIGHT])
       , issuesColors = getIssuesColors(data)
 
     container
       .style('margin-left', MARGIN_LEFT)
       .style('margin-right', MARGIN_RIGHT + 'px')
 
-    // return
+    // Remove any old elements
     svg.selectAll("*").remove()
 
     svg
@@ -241,10 +245,10 @@ $(function(){
           , to = dateToDays(closed_at)
 
         if (closed_at !== null) {
-          return scale((to + from)/2)
+          return scale((to + from)/2 - start)
         } else {
           // Make it quater of the circle with today as center
-          return scale(to)
+          return scale(to - start)
         }
       })
       .attr("r", function (d) {
@@ -253,16 +257,16 @@ $(function(){
           , to = dateToDays(closed_at)
 
         if (closed_at !== null) {
-          return scaleRadius(to - from) / 2
+          return scale(to - from + 1) / 2
         } else {
           // Make it quater of the circle if it is still open
-          return scaleRadius(to - from)
+          return scale(to - from + 0.5)
         }
       })
       .style("fill", 'none')
       .style('stroke', function(d) {
         if (issuesColors.length >= d.number) {
-          return issuesColors[d.number - 1][0]
+          return issuesColors[d.number][0]
         } else {
           return NO_LABEL_COLOR
         }
