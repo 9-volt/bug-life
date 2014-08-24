@@ -17,3 +17,8 @@ input {
   margin: 20px;
   border: 1px solid #ccc;
 }
+
+/* Hide axis lines*/
+svg .nv-axis .tick line{
+  /*display: none;*/
+}
