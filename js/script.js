@@ -7,6 +7,10 @@ $(function(){
     , loadingText = 'Loading...'
     , errorText = 'Error'
 
+
+  /*
+    Parser callbacks
+  */
   parser.beforeParse = function(){
     $repoTitle.text(loadingText)
     $repoDescription.text(loadingText)
@@ -32,12 +36,45 @@ $(function(){
     console.log('Progress', progress)
   }
 
+  /*
+    On page processing
+  */
+
+  var lastInputValue = null
+
+  function parseInput(str) {
+    var fullRegexp = /^https?\:\/\/github.com\/([a-z0-9\-\_\.]+\/[a-z0-9\-\_\.]+)\/?/i
+      , simpleRegexp = /([a-z0-9\-\_\.]+\/[a-z0-9\-\_\.]+)\/?/i
+      , match
+
+    // Check if full repo url was passed (http://github.com/user/name)
+    if ((match = fullRegexp.exec(str)) != null) {
+      return match[1]
+    } else if ((match = simpleRegexp.exec(str)) != null) {
+      return match[1]
+    } else {
+      return null
+    }
+  }
+
   // On form submit
   $('#repository-form').submit(function(ev){
     ev.preventDefault()
 
-    if ($repository.val()) {
-      parser.parse($repository.val())
+    var val = parseInput($repository.val())
+    console.log(val)
+
+    if (val != null && val !== lastInputValue) {
+      // Cache last value
+      lastInputValue = val
+
+      // Update input value with parsed value
+      if ($repository.val() !== val) {
+        $repository.val(val)
+      }
+
+      // Run parser
+      parser.parse(val)
     }
   })
 
