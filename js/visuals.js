@@ -241,6 +241,38 @@ $(function(){
     return issuesColors
   }
 
+  function splitIssuesByOpenTime(data) {
+    var issue
+      , splitIssues = data.issues.slice()
+      , length = splitIssues.length
+      , i, l
+
+    for (i = 0; i < length; i++) {
+      issue = splitIssues[i]
+
+      if (issue.open.length > 1) {
+        for (l = issue.open.length - 1; l > 0; l--) {
+          splitIssues.push({
+            labels: issue.labels
+          , number: issue.number
+          , open: [issue.open[l]]
+          , state: issue.state
+          , title: issue.title
+          , url: issue.url
+          })
+
+          delete issue.open[l]
+
+          // Update length after removing
+          issue.open.length -= 1
+        }
+
+      }
+    }
+
+    return splitIssues
+  }
+
   Visuals.prototype.showSemiCircles = function(data, createNew) {
     var container = d3.select('#semiCircles')
       , svg = container.select('svg')
@@ -249,6 +281,7 @@ $(function(){
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
       , issuesColors = getIssuesColors(data)
+      , splitIssues = splitIssuesByOpenTime(data)
 
     // By default create new is true
     createNew = createNew === void 0 ? true : createNew
@@ -261,7 +294,7 @@ $(function(){
     if (createNew) {
       this.semiCircles = svg
         .selectAll("circle")
-        .data(data.issues)
+        .data(splitIssues)
         .enter()
         .append('circle')
         .attr("cy", 0)
@@ -289,7 +322,7 @@ $(function(){
     if (this.semiCircles != null) {
       // Attributes that vary on window resize
       this.semiCircles
-        .data(data.issues)
+        .data(splitIssues)
         .transition()
           .duration(500)
         .attr("cx", function (d) {
