@@ -6,7 +6,7 @@ $(function(){
 
   var NO_LABEL_COLOR = 'ccc'
     , NO_LABEL_TITLE = 'no label'
-    , MARGIN_RIGHT = 20
+    , MARGIN_RIGHT = 30
     , MARGIN_LEFT = 0
     , STROKE_OPACITY = 0.4
     , STROKE_OPACITY_ACTIVE = 0.9

@@ -19,7 +19,7 @@ a {
 
 /* Keep issue numbers out of container */
 #graphs .stackedArea{
-  margin-right: -20px;
+  margin-right: -30px;
 }
 
 /* Hide line between stackedArea and values */
