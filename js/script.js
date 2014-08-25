@@ -196,20 +196,26 @@ $(function(){
   hello.init({github : "baf32f7bbb8d975e64f3"})
 
   // Show the popup with auth
-  var repo_uri = ''
-  parser.onAuthRequired = function(repository_uri) {
-    $("#login-popup").show()
-    repo_uri = repository_uri
+  var repositoryUri = ''
+  parser.onAuthRequired = function(_repositoryUri) {
+    repositoryUri = _repositoryUri
+    $('#authModal').modal($('#authModal').data())
   }
 
-  // Authenticate with github
-  $("#login").on("click", function(event) {
+  // Proceed with GitHub authentication
+  $('#authModal').on('click', '#proceed-to-auth', function(ev){
+    console.log(ev)
+    ev.preventDefault()
+
     hello('github').login({redirect_uri:'redirect.html'}, function(ev) {
       if (!ev.hasOwnProperty("error")) {
         var github = hello("github").getAuthResponse()
+
         parser.token = github.access_token
         document.cookie = "token=" + github.access_token
-        parser.parse(repo_uri)
+
+        // Continue with parsing
+        parser.parse(repositoryUri)
       }
     })
   })
