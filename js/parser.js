@@ -332,6 +332,8 @@ $(function(){
       return this.onAuthRequired(repo_uri)
     } else if (error.request.status === 404) {
       return this.onError("Resource not found. Check if repository slug is correct.")
+    } else if (error.request.status === 401) {
+      return this.onError("You do not have permision to view this repository. Try to set a token that allows to read from this repository.")
     } else {
       return this.onError("Unknown error.")
     }
