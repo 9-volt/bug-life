@@ -197,6 +197,7 @@ $(function(){
 
   // Show the message with auth request
   parser.onAuthRequired = function(repositoryUri) {
+    unlockInput()
     showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request">authorize</a> this application.', 'warning')
   }
 
