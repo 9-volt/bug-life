@@ -57,8 +57,6 @@ $(function(){
 
     $graphs.hide()
     $progress.show()
-
-    visuals.showLoading()
   }
 
   parser.afterParse = function(data){
@@ -83,8 +81,6 @@ $(function(){
     setProgress(0)
 
     showAlert('<strong>Error occured!</strong> ' + message, 'danger')
-
-    visuals.showError()
   }
 
   parser.onProgress = function(progress){

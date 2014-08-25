@@ -34,14 +34,6 @@ $(function(){
     window.addEventListener('resize', onResize)
   }
 
-  Visuals.prototype.showLoading = function() {
-    console.log('Visual Loading')
-  }
-
-  Visuals.prototype.showError = function(message) {
-    // console.log('Visual Error', message)
-  }
-
   /**
    * Transforms a date of type YYYY-MM-DD into timestamp
    * @param  {String} str
