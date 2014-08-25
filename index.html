@@ -131,12 +131,25 @@
     <div class="row">
       <div class="col-md-12">
         <h2 id="nav" class="page-header">About</h2>
-        <p class="lead">Bug-life is a visualization of a repository issues from 2 perspectives:</p>
-        <ul class="lead-list">
-          <li>Number of open issues at a given point of time during the lifetime of a repository</li>
-          <li>Issues lifespan (from their creation until their closing)</li>
+        <h4>General</h4>
+        <p>The following project was created for <a href="https://github.com/blog/1864-third-annual-github-data-challenge">Third Annual Github Data Challenge</a> and targets repository issues.</p>
+        <p>Bug-life is a visualization of repository issues from 2 perspectives:</p>
+        <ul>
+          <li>Amount of issues labels during the lifespan of the repo</li>
+          <li>Lifespan of an issue (since creation until closing)</li>
         </ul>
-        <p class="lead">It allows to see ...</p>
+        <p>The data is collected using <a href="https://developer.github.com/v3/">Github API</a> and it includes:</p>
+        <ul>
+          <li>generic information about a repo (name, description, date created)</li>
+          <li>labels used in issues</li>
+          <li>repository issues</li>
+          <li>repository issues events</li>
+        </ul>
+        <h4>How is works?</h4>
+        <p>The top graph shows the number of labels of open issues at a specific date. It also presents the usage of issues and labels during the lifetime of the repo. Only current issues labels are shown, i.e. the unlabeled/labeled events are not tracked. Each label represents one unit, hence it gives an overview of the generic status of the project. For example, if there are many open issues with <code>enhancement</code> or <code>feature</code> labels, then most probably the team is working on a new version. If there are many <code>bug</code> and <code>documentation</code> labels, then the team is getting ready for a new release. It might be seen that some projects have no issues at all or are not using labels.</p>
+        <p>The bottom graph shows the lifespan of issues. The bigger the semicircle radius, the longer it takes to close an issue. If the end point of the semicircle is not visible on the graph, then the issue is still open. Each open/close event is visible on the graph. The color of the issue is set by the issue label. This is a good representation to determine old pending issues and view project agility.</p>
+        <h4>Why authorize?</h4>
+        <p>For unauthenticated requests, Github sets a rate limit up to <a href="https://developer.github.com/v3/#rate-limiting">60 requests per hour</a>. In case the number of requests to collect data is bigger than the rate limit and you wish to continue, we will kindly ask you to authenticate yourself via Github OAuth and authorize our application. Now your rate limit is 5,000 requests per hour. Enjoy :)</p>
       </div>
     </div>
   </div>
