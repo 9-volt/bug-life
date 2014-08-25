@@ -195,16 +195,13 @@ $(function(){
   // Init authentication
   hello.init({github : "baf32f7bbb8d975e64f3"})
 
-  // Show the popup with auth
-  var repositoryUri = ''
-  parser.onAuthRequired = function(_repositoryUri) {
-    repositoryUri = _repositoryUri
-    $('#authModal').modal($('#authModal').data())
+  // Show the message with auth request
+  parser.onAuthRequired = function(repositoryUri) {
+    showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request">authorize</a> this application.', 'warning')
   }
 
-  // Proceed with GitHub authentication
-  $('#authModal').on('click', '#proceed-to-auth', function(ev){
-    console.log(ev)
+  // Auth request
+  $('#repository-alert').on('click', '#authorization-request', function(ev){
     ev.preventDefault()
 
     hello('github').login({redirect_uri:'redirect.html'}, function(ev) {
@@ -212,10 +209,12 @@ $(function(){
         var github = hello("github").getAuthResponse()
 
         parser.token = github.access_token
+        // Save into cookies
         document.cookie = "token=" + github.access_token
 
         // Continue with parsing
-        parser.parse(repositoryUri)
+        lastInputValue = null
+        checkAndParse()
       }
     })
   })
