@@ -18,6 +18,9 @@ $(function(){
    */
   Visuals.prototype.init = function(selector) {
     var that = this
+      , $svg1 = $('#stackedArea svg')
+      , $svg2 = $('#semiCircles svg')
+      , $graphs = $('#graphs')
 
     // Init semicircles container
     d3.select('#semiCircles')
@@ -29,7 +32,16 @@ $(function(){
       if (that.lastData != null) {
         that.showSemiCircles(that.lastData, false)
       }
+
+      var width = $graphs.width()
+        , svg1Height = Math.ceil(Math.max(200, width / 3))
+        , svg2Height = Math.ceil(Math.max(200, width / 2.5))
+
+      $svg1.height(svg1Height)
+      $svg2.height(svg2Height)
     }
+    // Trigger on resize for the first time
+    onResize()
 
     window.addEventListener('resize', onResize)
   }
