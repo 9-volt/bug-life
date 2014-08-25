@@ -12,6 +12,9 @@ $(function(){
     , $graphs = $('#graphs')
     , $progress = $('#progress')
     , $progressBar = $progress.children('.progress-bar')
+    , $tokenForm = $('#token-form')
+    , $tokenInput = $('#token-input')
+    , $tokenButton = $('#token-button')
 
   /*
     Alert
@@ -74,6 +77,7 @@ $(function(){
     $repoTitle.text(errorText)
     $repoDescription.text(errorText)
     unlockInput()
+    lastInputValue = null
 
     $progress.hide()
     setProgress(0)
@@ -198,7 +202,7 @@ $(function(){
   // Show the message with auth request
   parser.onAuthRequired = function(repositoryUri) {
     unlockInput()
-    showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request">authorize</a> this application.', 'warning')
+    showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request">authorize</a> this application. Alternatively you can <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use" target="_blank">generate a token</a> and <a href="#" class="toggle-token-input">set it manually</a>.', 'warning')
   }
 
   // Auth request
@@ -219,4 +223,34 @@ $(function(){
       }
     })
   })
+
+  /*
+  Token input
+   */
+
+  $('body').on('click', '.toggle-token-input', function(ev){
+    ev.preventDefault()
+
+    $tokenForm.toggle(function(){
+      if ($(this).css('display') !== 'none') {
+        // Update token input
+        $tokenInput.val(parser.token)
+      }
+    })
+  })
+
+  $tokenForm.submit(function(ev){
+    ev.preventDefault()
+
+    var token = $tokenInput.val()
+
+    // Update token
+    parser.token = token
+    // Save into cookies
+    document.cookie = "token=" + token
+
+    $tokenForm.hide()
+  })
+
+  // display-token-input
 })

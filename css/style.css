@@ -72,3 +72,8 @@ svg .nv-axis .tick line{
   margin: 20px 0;
   display: none;
 }
+
+/* Alert */
+.alert {
+  margin-bottom: 0;
+}

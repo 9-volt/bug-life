@@ -67,9 +67,28 @@
               <button class="btn btn-default" type="submit" id="repository-button" data-loading-text="Loading...">Render</button>
             </span>
             <input type="text" class="form-control" id="repository-input" placeholder="author/repository" value="ruipgil/scraperjs">
+            <span class="input-group-btn">
+              <button class="btn btn-default toggle-token-input" type="button"><span class="glyphicon glyphicon-cog"></span></button>
+            </span>
           </div>
         </form>
         <div class="alert alert-warning" role="alert" id="repository-alert" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <form class="form-horizontal" role="form" id="token-form" style="display: none">
+          <div class="height-placeholder"></div>
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit" id="token-button" data-loading-text="Loading...">Update token</button>
+            </span>
+            <input type="text" class="form-control" id="token-input" placeholder="your token here" value="">
+          </div>
+          <p class="help-block">Tokens are used to increase <a href="https://developer.github.com/v3/#rate-limiting" target="_blank">API rate limit</a>. Tokens can be <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use" target="_blank">manually generated</a>. If you want to view data for private repositories then you have to generate a token that has access to your private repositories.</p>
+          <p class="help-block">Tokens are stored in cookies. If you want to remove a token from cookies - set it as an empty string.</p>
+        </form>
       </div>
     </div>
 
