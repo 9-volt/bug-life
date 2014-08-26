@@ -100,14 +100,14 @@ $(function(){
     var final_repo_info = {}
     repo.show(function(err, repo) {
       if (err !== null) {
-        return that.checkError(err)
+        return that.checkError(err, repository_uri)
       }
       final_repo_info.name = repo.name
       final_repo_info.description = repo.description
       final_repo_info.created_at = formatDate(new Date(repo.created_at))
       final_repo_info.url = repo.url
 
-      that.fillIssuesData(final_repo_info, github, {'username': username, 'reponame': reponame})
+      that.fillIssuesData(final_repo_info, github, repository_uri)
     })
   }
 
@@ -149,15 +149,16 @@ $(function(){
    * @param  {Object} github
    * @param  {Object} options
    */
-  Parser.prototype.fillIssuesData = function(final_repo_info, github, options) {
+  Parser.prototype.fillIssuesData = function(final_repo_info, github, repository_uri) {
     var that = this
-    var username = options.username
-    var reponame = options.reponame
+    var repository_uri_splitted = repository_uri.split("/")
+    var username = repository_uri_splitted[0]
+    var reponame = repository_uri_splitted[1]
     var issues = github.getIssues(username, reponame)
     var issues_events = github.getIssuesEvents(username, reponame)
     issues.list_all({"state": "all", "per_page": PER_PAGE}, function(err, issues) {
       if (err !== null) {
-        return that.checkError(err)
+        return that.checkError(err, repository_uri)
       }
       final_repo_info.labels = that.get_labels(issues)
       var all_issues = issues.filter(is_not_pull_request)
@@ -167,7 +168,7 @@ $(function(){
 
       issues_events.list_all({"per_page": PER_PAGE}, function(err, issues_events) {
         if (err !== null) {
-          return that.checkError(err)
+          return that.checkError(err, repository_uri)
         }
         issues_events.reverse()
         var issues = that.get_issues_from_events(issues_events)
@@ -325,11 +326,11 @@ $(function(){
   /**
    * Check type of error and perform action accordingly
    * @param  {Object} error
+   * @param  {String} repository_uri
    */
-  Parser.prototype.checkError = function(error) {
+  Parser.prototype.checkError = function(error, repository_uri) {
     if (error.request.status === 403) {
-      var repo_uri = /\/repos\/([\w-]+\/[\w-]+)/.exec(error.path)[1]
-      return this.onAuthRequired(repo_uri)
+      return this.onAuthRequired(repository_uri)
     } else if (error.request.status === 404) {
       return this.onError("Resource not found. Check if repository slug is correct.")
     } else if (error.request.status === 401) {
