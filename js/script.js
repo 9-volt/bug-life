@@ -159,7 +159,7 @@ $(function(){
   })
 
   // On clicking examples links
-  $('#examples').on('click', 'a', function(ev){
+  $('.examples').on('click', 'a', function(ev){
     $repositoryInput.val($(this).data('github'))
     checkAndParse()
   })
