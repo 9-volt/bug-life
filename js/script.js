@@ -165,6 +165,26 @@ $(function(){
     checkAndParse()
   })
 
+  function getQueryParams(qs) {
+    qs = qs.split("+").join(" ");
+
+    var params = {}
+      , tokens
+      , re = /[?&]?([^=]+)=([^&]*)/g
+      ;
+
+    while (tokens = re.exec(qs)) {
+      params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    }
+
+    return params;
+  }
+
+  // If repo is passed trough URI then assign it to input
+  if (document.location.search && getQueryParams(document.location.search).hasOwnProperty('repo')) {
+    $repositoryInput.val(getQueryParams(document.location.search).repo)
+  }
+
   // If initial form has a value
   if ($repositoryInput.val()) {
     checkAndParse()
