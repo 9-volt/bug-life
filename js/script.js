@@ -188,6 +188,13 @@ $(function(){
     $repositoryInput.val(getQueryParams(document.location.search).repo)
   }
 
+  window.onpopstate = function() {
+    if (getQueryParams(document.location.search).hasOwnProperty('repo')) {
+      $repositoryInput.val(getQueryParams(document.location.search).repo)
+      checkAndParse()
+    }
+  }
+
   // If initial form has a value
   if ($repositoryInput.val()) {
     checkAndParse()
