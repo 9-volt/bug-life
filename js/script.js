@@ -56,6 +56,7 @@ $(function(){
     lockInput()
 
     $graphs.hide()
+    visuals.emptyGraphs()
     $progress.show()
   }
 

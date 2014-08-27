@@ -46,6 +46,11 @@ $(function(){
     window.addEventListener('resize', onResize)
   }
 
+  Visuals.prototype.emptyGraphs = function() {
+    d3.selectAll('#stackedArea > svg > *').remove()
+    d3.selectAll('#semiCircles > svg > *').remove()
+  }
+
   /**
    * Transforms a date of type YYYY-MM-DD into timestamp
    * @param  {String} str
@@ -289,11 +294,6 @@ $(function(){
 
     // By default create new is true
     createNew = createNew === void 0 ? true : createNew
-
-    if (createNew) {
-      // Remove any old elements
-      svg.selectAll("*").remove()
-    }
 
     if (createNew) {
       this.semiCircles = svg
