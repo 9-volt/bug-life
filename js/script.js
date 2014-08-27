@@ -137,6 +137,9 @@ $(function(){
     }
 
     if (val !== null && val !== lastInputValue) {
+      // Update browser history
+      window.history.pushState({}, "", document.location.href.replace(/\?.*/i, '').replace(/\/$/i, '') + '/?repo=' + val)
+
       hideAlert()
 
       // Cache last value
