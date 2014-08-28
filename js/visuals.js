@@ -343,7 +343,7 @@ $(function(){
           hideTooltip(d, d3.mouse(this))
         })
         .on('mousemove', function(d){
-          moveTooltip(d, d3.mouse(this), width, height)
+          moveTooltip(d, d3.mouse(this), svg[0][0])
         })
     }
 
@@ -451,10 +451,12 @@ $(function(){
     $tooltip.show()
   }
 
-  function moveTooltip(d, mouse, width, height) {
+  function moveTooltip(d, mouse, svg) {
     var x = mouse[0]
       , y = mouse[1]
       , xPadding = 50
+      , width = svg.offsetWidth
+      , height = svg.offsetHeight
       , tooltipWidth = $tooltip.width()
       , tooltipHeight = $tooltip.height()
 
