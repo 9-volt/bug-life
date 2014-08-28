@@ -184,6 +184,9 @@ $(function(){
   }
 
   function drawStackedArea(processedDataArray) {
+    var _chart // Keeps chart instance
+
+    nv.dev = false
     nv.addGraph(function() {
       var chart = nv.models.stackedAreaChart()
         .margin({
@@ -217,8 +220,15 @@ $(function(){
 
       nv.utils.windowResize(chart.update);
 
+      _chart = chart
       return chart;
     });
+
+    // After renderer finished
+    nv.dispatch.on('render_end', function(){
+      // Remove onClick dispatch
+      _chart.stacked.dispatch.on('areaClick.toggle', null)
+    })
   }
 
   function dateToDays(str) {
