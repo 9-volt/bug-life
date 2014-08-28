@@ -845,13 +845,16 @@ window.nv.tooltip.* also has various helper methods.
     nv.tooltip.cleanup = function() {
 
               // Find the tooltips, mark them for removal by this class (so others cleanups won't find it)
-              var tooltips = document.getElementsByClassName('nvtooltip');
+              var tooltips = Array.prototype.filter.call(document.getElementsByClassName('nvtooltip'), function(el){
+                return el.className.indexOf('foreign') === -1;
+              });
               var purging = [];
               while(tooltips.length) {
                 purging.push(tooltips[0]);
                 tooltips[0].style.transitionDelay = '0 !important';
                 tooltips[0].style.opacity = 0;
                 tooltips[0].className = 'nvtooltip-pending-removal';
+                tooltips.shift();
               }
 
               setTimeout(function() {
