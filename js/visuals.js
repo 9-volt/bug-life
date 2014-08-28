@@ -255,9 +255,11 @@ $(function(){
       , splitIssues = data.issues.slice()
       , length = splitIssues.length
       , i, l
+      , _open
 
     for (i = 0; i < length; i++) {
       issue = splitIssues[i]
+      _open = issue.open.slice()
 
       if (issue.open.length > 1) {
         for (l = issue.open.length - 1; l > 0; l--) {
@@ -265,6 +267,7 @@ $(function(){
             labels: issue.labels
           , number: issue.number
           , open: [issue.open[l]]
+          , _open: _open
           , state: issue.state
           , title: issue.title
           , url: issue.url
@@ -275,7 +278,8 @@ $(function(){
           // Update length after removing
           issue.open.length -= 1
         }
-
+      } else {
+        issue._open = _open
       }
     }
 
@@ -284,8 +288,10 @@ $(function(){
 
   Visuals.prototype.showSemiCircles = function(data, createNew) {
     var container = d3.select('#semiCircles')
+      , $container = $('#semiCircles')
       , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
+      , height = svg[0][0].offsetHeight
       , start = dateToDays(data.created_at)
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
@@ -316,9 +322,14 @@ $(function(){
         .style('stroke-width', 2)
         .on('mouseover', function(d){
           d3.select(this).style({'stroke-opacity': STROKE_OPACITY_ACTIVE})
+          displayTooltip(d, d3.mouse(this), data)
         })
         .on('mouseout', function(d){
           d3.select(this).style({'stroke-opacity': STROKE_OPACITY})
+          hideTooltip(d, d3.mouse(this))
+        })
+        .on('mousemove', function(d){
+          moveTooltip(d, d3.mouse(this), width, height)
         })
     }
 
@@ -354,6 +365,98 @@ $(function(){
           }
         })
     }
+  }
+
+  var $tooltip = $('#nvtooltip-semicircles')
+    , $tooltipTitle = $tooltip.find('.title')
+    , $tooltipBody = $tooltip.find('tbody')
+    , $tooltipStub = $tooltip.find('.stub')
+
+  /**
+   * Formats a timestamp to MM/DD/YYYY
+   * @param  {Integer} timestamp
+   * @return {String}
+   */
+  function formatTimestamp(timestamp) {
+    var date = new Date(timestamp)
+    return ('0' + (date.getMonth() + 1)).slice(-2) + '/' + ('0' + date.getDate()).slice(-2) + '/' +  date.getFullYear()
+  }
+
+  function displayTooltip(d, mouse, data) {
+    var i
+
+    $tooltipTitle.text('Issue #' + d.number + ': ' + d.title)
+
+    // Remove previous body
+    $tooltipBody.children().not('.stub').remove()
+
+    for (i = 0; i < d.labels.length; i++) {
+      $tooltipStub
+        .clone()
+        .removeClass('stub')
+          .find('.legend-color-guide > div')
+          .css('background-color', '#' + getLabelColor(data, d.labels[i]))
+        .end()
+          .find('.key')
+          .text(d.labels[i])
+        .end()
+        .appendTo($tooltipBody)
+        .show()
+    }
+
+    for (i = 0; i < d._open.length; i++) {
+      $tooltipStub
+        .clone()
+        .removeClass('stub')
+          .find('.legend-color-guide > div')
+          .addClass('glyphicon glyphicon-eye-open')
+          .css('display', 'inline')
+        .end()
+          .find('.key')
+          .text(formatTimestamp(dateToTimestamp(d._open[i].from)))
+        .end()
+        .appendTo($tooltipBody)
+        .show()
+
+      if (d._open[i].to !== null) {
+        $tooltipStub
+          .clone()
+          .removeClass('stub')
+            .find('.legend-color-guide > div')
+            .addClass('glyphicon glyphicon-eye-close')
+            .css('display', 'inline')
+          .end()
+            .find('.key')
+            .text(formatTimestamp(dateToTimestamp(d._open[i].to)))
+          .end()
+          .appendTo($tooltipBody)
+          .show()
+      }
+    }
+
+    $tooltip.show()
+  }
+
+  function moveTooltip(d, mouse, width, height) {
+    var x = mouse[0]
+      , y = mouse[1]
+      , xPadding = 50
+      , tooltipWidth = $tooltip.width()
+      , tooltipHeight = $tooltip.height()
+
+    if (x + xPadding + tooltipWidth > width) {
+      // position tooltip to the left of mouse
+      $tooltip.css('left', x - xPadding - tooltipWidth)
+    } else {
+      // position tooltip to the right of the mouse
+      $tooltip.css('left', x + xPadding)
+    }
+
+    $tooltip.css('top', y - Math.ceil(tooltipHeight / 2))
+  }
+
+  function hideTooltip(d, mouse) {
+    $tooltip.hide()
   }
 
   window.Visuals = Visuals
