@@ -30,7 +30,7 @@ $(function(){
     // On resize
     var onResize = function(ev){
       if (that.lastData != null) {
-        that.showSemiCircles(that.lastData, false)
+        that.showSemiCircles(that.lastData, that.lastSplitIssues, false)
       }
 
       var width = $graphs.width()
@@ -68,10 +68,13 @@ $(function(){
 
   Visuals.prototype.showData = function(data) {
     console.log(data)
+    var splitIssues = splitIssuesByOpenTime(data)
+
     this.showStackedArea(data)
-    this.showSemiCircles(data)
+    this.showSemiCircles(data, splitIssues)
 
     this.lastData = data
+    this.lastSplitIssues = splitIssues
   }
 
   Visuals.prototype.showStackedArea = function(data) {
@@ -293,7 +296,7 @@ $(function(){
     return splitIssues
   }
 
-  Visuals.prototype.showSemiCircles = function(data, createNew) {
+  Visuals.prototype.showSemiCircles = function(data, splitIssues, createNew) {
     var container = d3.select('#semiCircles')
       , $container = $('#semiCircles')
       , svg = container.select('svg')
@@ -303,7 +306,6 @@ $(function(){
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
       , issuesColors = getIssuesColors(data)
-      , splitIssues = splitIssuesByOpenTime(data)
 
     // By default create new is true
     createNew = createNew === void 0 ? true : createNew
