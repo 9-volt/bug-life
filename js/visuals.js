@@ -253,13 +253,16 @@ $(function(){
   function splitIssuesByOpenTime(data) {
     var issue
       , splitIssues = data.issues.slice()
-      , length = splitIssues.length
+      , splitIssuesLength = splitIssues.length
       , i, l
       , _open
+      // Variable to keep links of SVG elements
+      , _linked
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < splitIssuesLength; i++) {
       issue = splitIssues[i]
       _open = issue.open.slice()
+      _linked = []
 
       if (issue.open.length > 1) {
         for (l = issue.open.length - 1; l > 0; l--) {
@@ -271,15 +274,19 @@ $(function(){
           , state: issue.state
           , title: issue.title
           , url: issue.url
+          , _linked: _linked
           })
-
-          delete issue.open[l]
 
           // Update length after removing
           issue.open.length -= 1
         }
+
+        issue.open = [issue.open[0]]
+        issue._open = _open
+        issue._linked = _linked
       } else {
         issue._open = _open
+        issue._linked = _linked
       }
     }
 
@@ -312,6 +319,9 @@ $(function(){
         .attr('r', 0)
         .style("fill", 'none')
         .style('stroke', function(d) {
+          // Add to linked list
+          d._linked.push(this)
+
           if (issuesColors.length >= d.number) {
             return issuesColors[d.number][0]
           } else {
@@ -321,11 +331,15 @@ $(function(){
         .style('stroke-opacity', 0.5)
         .style('stroke-width', 2)
         .on('mouseover', function(d){
-          d3.select(this).style({'stroke-opacity': STROKE_OPACITY_ACTIVE})
+          for (var i = 0; i < d._linked.length; i++) {
+            d3.select(d._linked[i]).style({'stroke-opacity': STROKE_OPACITY_ACTIVE})
+          }
           displayTooltip(d, d3.mouse(this), data)
         })
         .on('mouseout', function(d){
-          d3.select(this).style({'stroke-opacity': STROKE_OPACITY})
+          for (var i = 0; i < d._linked.length; i++) {
+            d3.select(d._linked[i]).style({'stroke-opacity': STROKE_OPACITY})
+          }
           hideTooltip(d, d3.mouse(this))
         })
         .on('mousemove', function(d){
