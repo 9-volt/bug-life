@@ -81,3 +81,14 @@ svg .nv-axis .tick line{
 #semiCircles {
   position: relative;
 }
+
+.explained-image {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.explained-image img{
+  width: auto;
+  max-width: 100%;
+  height: auto;
+}
