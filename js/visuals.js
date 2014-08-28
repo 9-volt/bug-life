@@ -202,6 +202,7 @@ $(function(){
         .showXAxis(false)                 // Hide X Axis (dates)
         // .showYAxis(false)
         .showLegend(false)                // Hide legend
+        .transitionDuration(0)
 
       //Format x-axis labels with custom function.
       chart.xAxis.tickFormat(function(d) {
@@ -354,8 +355,8 @@ $(function(){
       // Attributes that vary on window resize
       this.semiCircles
         .data(splitIssues)
-        .transition()
-          .duration(500)
+        // .transition()
+        //   .duration(500)
         .attr("cx", function (d) {
           var from = dateToDays(d.open[0].from)
             , closed_at = d.open[d.open.length - 1].to
