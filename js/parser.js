@@ -394,7 +394,10 @@ $(function(){
    * @return {Boolean}
    */
   function is_not_pull_request_event(element) {
-    return !element.issue.hasOwnProperty('pull_request')
+    if (element.issue != null) { 
+      return !element.issue.hasOwnProperty('pull_request')
+    }
+    return false
   }
 
   /**
