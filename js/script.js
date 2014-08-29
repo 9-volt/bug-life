@@ -229,7 +229,7 @@ $(function(){
   // Show the message with auth request
   parser.onAuthRequired = function(repositoryUri) {
     unlockInput()
-    showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request">authorize</a> this application. Alternatively you can <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use" target="_blank">generate a token</a> and <a href="#" class="toggle-token-input">set it manually</a>.', 'warning')
+    showAlert('<strong>API rate limit exceeded</strong> You have exceeded your API requests rate limit or you have no permissions to view this repository issues. In order to increase limit please <a href="#" id="authorization-request" class="btn btn-warning btn-xs">authorize</a> this application. Alternatively you can <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use" target="_blank">generate a token</a> and <a href="#" class="toggle-token-input">set it manually</a>.', 'warning')
   }
 
   // Auth request
