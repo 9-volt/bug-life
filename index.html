@@ -179,10 +179,10 @@
           <li>repository issues events</li>
         </ul>
         <h4>How is works?</h4>
-        <p>The top graph shows the number of labels of open issues at a specific date. It also presents the usage of issues and labels during the lifetime of the repo. Only current issues labels are shown, i.e. the unlabeled/labeled events are not tracked. Each label represents one unit, hence it gives an overview of the generic status of the project. For example, if there are many open issues with <code>enhancement</code> or <code>feature</code> labels, then most probably the team is working on a new version. If there are many <code>bug</code> and <code>documentation</code> labels, then the team is getting ready for a new release. It might be seen that some projects have no issues at all or are not using labels.</p>
+        <p>The top graph shows the number of labels of open issues at a specific date. It also presents the usage of issues and labels during the lifetime of the repo. Only current issue labels are shown, i.e. the unlabeled/labeled events are not tracked. Each label represents one unit, hence it gives an overview of the generic status of the project. For example, if there are many open issues with <code>enhancement</code> or <code>feature</code> labels, then most probably the team is working on a new version. If there are many <code>bug</code> and <code>documentation</code> labels, then the team is getting ready for a new release. It might be seen that some projects have no issues at all or are not using labels.</p>
         <p>The bottom graph shows the lifespan of issues. The bigger the semicircle radius, the longer it takes to close an issue. If the end point of the semicircle is not visible on the graph, then the issue is still open. Each open/close event is visible on the graph. The color of the issue is set by the issue label. This is a good representation to determine old pending issues and view project agility.</p>
         <h4>Why authorize?</h4>
-        <p>For unauthenticated requests, Github sets a rate limit up to <a href="https://developer.github.com/v3/#rate-limiting">60 requests per hour</a>. In case the number of requests to collect data is bigger than the rate limit and you wish to continue, we will kindly ask you to authenticate yourself via Github OAuth and authorize our application. Now your rate limit is 5,000 requests per hour. Enjoy :)</p>
+        <p>For unauthenticated requests, Github sets a requests rate limit up to <a href="https://developer.github.com/v3/#rate-limiting">60 requests per hour</a>. In case the number of requests to collect data is bigger than the rate limit you'll have to authenticate yourself via Github OAuth and authorize our application. After authorization your requests rate limit will be 5,000 requests per hour. Enjoy :)</p>
       </div>
     </div>
   </div>
@@ -195,7 +195,7 @@
         <div class="explained-image">
           <img src="screenshots/showcase-1.png" alt="deanmalmgren/textract graph">
         </div>
-        <p>From the top graph it is seen that the repo contains mostly labeled issues, thus the maintainers keep track of different types of issues. There are few bugs and mostly feature requests. From the below graph - about half of issues have short lifespan. Feature requests require more time to be implemented and closed. As well, feature requests constitute the main part of open issues at the moment.</p>
+        <p>From the top graph it is seen that the repo contains mostly labeled issues, thus the maintainers keep track of different types of issues. There are few bugs and mostly feature requests. From the below graph - about half of issues have short lifespan. Feature requests require more time to be implemented and closed. As well, feature requests make out the main part of open issues at the moment.</p>
         <div class="examples">
           <a href="#repository-form" data-github="deanmalmgren/textract" class="btn btn-default">Load cute repo</a>
         </div>
@@ -203,7 +203,7 @@
         <div class="explained-image">
           <img src="screenshots/showcase-2.png" alt="jashkenas/backbone graph">
         </div>
-        <p>This is a popular repo on github - <a href="https://github.com/jashkenas/backbone" target="_blank">backbone</a>. It has a rich history, well organized labels and release cycles. On version 0.9.0, when backbone reached relatively stable state, many issues were closed. Before this release there were other important ones, for example 0.5.0.</p>
+        <p>This is a popular repo on github - <a href="https://github.com/jashkenas/backbone" target="_blank">backbone</a>. It has a rich history, well organized labels and release cycles. On version 0.9.0, when backbone reached a relatively stable state, many issues were closed. Before this release there were other important ones, for example 0.5.0.</p>
         <p>After 0.9.0 backbone lived through 3 other important milestones: 0.9.9, 1.0.0 and 1.1.0. Each of these releases was focused on different aspects. Right before version 0.9.9 most open issues were of type <code>change</code>, while before version 1.1.0 most open issues were of type <code>bug</code>.</p>
         <div class="examples">
           <a href="#repository-form" data-github="jashkenas/backbone" class="btn btn-default">Load mighty mountains</a>
