@@ -176,6 +176,7 @@ $(function(){
         events = events.filter(is_not_pull_request_event)
         var hash_issues = that.prepare_issues(all_issues)
         that.add_issue_events(hash_issues, events)
+        final_repo_info.earliest_issue_time = that.get_earliest_issue_time(hash_issues)
         final_repo_info.issues = that.tranform_issues(hash_issues)
         that.onProgress(100)
         that.afterParse(final_repo_info)
@@ -324,6 +325,26 @@ $(function(){
   }
 
   /**
+   * Gets the timestamp of the earliest issue
+   * @param  {Object} hash_issues
+   * @return {Number}
+   */
+  Parser.prototype.get_earliest_issue_time = function(hash_issues) {
+    var earliestTimestamp = +Infinity
+    var earliestTime
+
+    for (number in hash_issues) {
+      var issue = hash_issues[number]
+      var open = Date.parse(issue.open[0].from)
+      if (open < earliestTimestamp) {
+        earliestTimestamp = open
+        earliestTime = issue.open[0].from
+      }
+    }
+    return earliestTime
+  }
+
+  /**
    * Check type of error and perform action accordingly
    * @param  {Object} error
    * @param  {String} repository_uri
@@ -394,7 +415,7 @@ $(function(){
    * @return {Boolean}
    */
   function is_not_pull_request_event(element) {
-    if (element.issue != null) { 
+    if (element.issue != null) {
       return !element.issue.hasOwnProperty('pull_request')
     }
     return false
