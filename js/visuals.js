@@ -95,7 +95,7 @@ $(function(){
 
   function bootstrapStackedAreaObject(data) {
     var datesMilisecondsRange = {}
-      , start = dateToTimestamp(data.created_at)
+      , start = dateToTimestamp(data.earliest_issue_time)
       , today = dateToTimestamp(null) + 1
 
     // Fill dates range
@@ -313,7 +313,7 @@ $(function(){
       , svg = container.select('svg')
       , width = svg[0][0].offsetWidth
       , height = svg[0][0].offsetHeight
-      , start = dateToDays(data.created_at)
+      , start = dateToDays(data.earliest_issue_time)
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
       , issuesColors = getIssuesColors(data)
