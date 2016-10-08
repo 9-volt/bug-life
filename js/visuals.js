@@ -311,8 +311,8 @@ $(function(){
     var container = d3.select('#semiCircles')
       , $container = $('#semiCircles')
       , svg = container.select('svg')
-      , width = svg[0][0].offsetWidth
-      , height = svg[0][0].offsetHeight
+      , width = svg[0][0].getBoundingClientRect().width
+      , height = svg[0][0].getBoundingClientRect().height
       , start = dateToDays(data.earliest_issue_time)
       , today = dateToDays(null)
       , scale = d3.scale.linear().domain([0, today - start]).range([MARGIN_LEFT, width + MARGIN_LEFT])
