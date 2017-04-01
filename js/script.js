@@ -224,7 +224,7 @@ $(function(){
     Authentication
   */
   // Init authentication
-  hello.init({github : "baf32f7bbb8d975e64f3"})
+  hello.init({github : "689dea3122f7c6cd4dba"})
 
   // Show the message with auth request
   parser.onAuthRequired = function(repositoryUri) {
