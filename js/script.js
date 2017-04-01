@@ -236,18 +236,18 @@ $(function(){
   $('#repository-alert').on('click', '.authorization-request', function(ev){
     ev.preventDefault()
 
-    hello('github').login({redirect_uri: 'redirect.html'}, function(ev) {
-      if (!ev.hasOwnProperty("error")) {
-        var github = hello("github").getAuthResponse()
+    hello('github').login({redirect_uri: 'redirect.html'}).then(function() {
+      var github = hello("github").getAuthResponse()
 
-        parser.token = github.access_token
-        // Save into cookies
-        document.cookie = "token=" + github.access_token
+      parser.token = github.access_token
+      // Save into cookies
+      document.cookie = "token=" + github.access_token
 
-        // Continue with parsing
-        lastInputValue = null
-        checkAndParse()
-      }
+      // Continue with parsing
+      lastInputValue = null
+      checkAndParse()
+    }, function(error) {
+      console.log('Error, failed to auth: ', error)
     })
   })
 
