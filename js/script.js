@@ -236,7 +236,7 @@ $(function(){
   $('#repository-alert').on('click', '.authorization-request', function(ev){
     ev.preventDefault()
 
-    hello('github').login({redirect_uri:'index.html'}, function(ev) {
+    hello('github').login({redirect_uri:'redirect.html'}, function(ev) {
       if (!ev.hasOwnProperty("error")) {
         var github = hello("github").getAuthResponse()
 
